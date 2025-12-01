@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Countdown - Day 1</title>
+    <title>Birthday Countdown - Day 1 & Day 2</title>
     <style>
+        /* Puzzle Blocks */
+        .puzzle-block {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ffe0f0, #ffc0dd);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            cursor: grab;
+            transform: rotate3d(1,1,0,10deg) translateZ(5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .puzzle-block.dragging {
+            opacity: 0.7;
+            transform: rotate3d(0,1,0,0deg) scale(1.1);
+            cursor: grabbing;
+        }
+        #puzzleContainer.completed .puzzle-block {
+            animation: explodeBlocks 0.8s forwards;
+        }
+        /* Confetti */
+        #puzzleConfetti {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+        /* Explosion Animation */
+        @keyframes explodeBlocks {
+            0% { transform: rotate3d(0,1,0,0deg) scale(1); opacity: 1; }
+            50% { transform: rotate3d(1,1,0,360deg) scale(1.5); opacity: 0.7; }
+            100% { transform: translateY(-50px) scale(0); opacity: 0; }
+        }
         * {
             margin: 0;
             padding: 0;
@@ -19,10 +59,86 @@
             position: relative;
         }
 
+        /* Tab Navigation */
+        .tab-navigation {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 2000;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+            border-bottom: 3px solid #ff6b9d;
+        }
+
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            color: #666;
+            border: 2px solid transparent;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            border-color: #ff6b9d;
+            box-shadow: 0 6px 25px rgba(255, 117, 140, 0.4);
+        }
+
+        .tab-separator {
+            font-size: 24px;
+            color: #ff6b9d;
+            font-weight: bold;
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150px);
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(255, 117, 140, 0.5);
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
         /* Music Section */
         .music-container {
             position: sticky;
-            top: 0;
+            top: 67px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
             padding: 20px;
@@ -119,6 +235,15 @@
         .section.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Day Container */
+        .day-container {
+            display: none;
+        }
+
+        .day-container.active {
+            display: block;
         }
 
         /* Section 1: Welcome */
@@ -230,8 +355,6 @@
             width: 80%;
         }
 
-
-
         /* Footer */
         .footer {
             text-align: center;
@@ -262,6 +385,256 @@
             pointer-events: none;
             animation: sparkleFloat 4s ease-in-out infinite;
             z-index: 5;
+        }
+
+        /* ========== DAY 2 STYLES ========== */
+        
+        /* Day 2 Welcome Section */
+        .day2-welcome {
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.7) 0%, rgba(255, 209, 220, 0.7) 50%, rgba(194, 233, 251, 0.7) 100%);
+            border-radius: 50px;
+            padding: 100px 50px;
+            margin: 0 20px;
+            box-shadow: 0 30px 80px rgba(132, 217, 172, 0.3);
+            backdrop-filter: blur(15px);
+            overflow: hidden;
+        }
+
+        .day2-title {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 30%, #a8e6cf 60%, #ffd89b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            margin-bottom: 30px;
+            animation: day2TitleFloat 3s ease-in-out infinite;
+            position: relative;
+            z-index: 10;
+            letter-spacing: 2px;
+        }
+
+        .day2-subtitle {
+            font-size: 1.8rem;
+            color: #00b894;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        /* Day 2 Floating 3D Elements */
+        .day2-floating-element {
+            position: absolute;
+            font-size: 3.5rem;
+            cursor: pointer;
+            animation: float3D 4s ease-in-out infinite;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .day2-floating-element:hover {
+            transform: scale(1.4) rotate(20deg);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+        }
+
+        .day2-floating-element:active {
+            animation: popBurst 0.6s ease-out forwards;
+        }
+
+        /* Day 2 Interactive Balloons */
+        .day2-balloon {
+            position: fixed;
+            font-size: 4rem;
+            cursor: pointer;
+            animation: day2BalloonFloat 10s linear infinite;
+            z-index: 5;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+        }
+
+        .day2-balloon:hover {
+            transform: scale(1.5) rotate(15deg);
+            filter: drop-shadow(0 10px 25px rgba(255, 215, 0, 0.6));
+        }
+
+        /* Day 2 Confetti */
+        .day2-confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            animation: day2ConfettiFall linear infinite;
+            cursor: pointer;
+            pointer-events: all;
+        }
+
+        .day2-confetti.star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .day2-confetti.circle {
+            border-radius: 50%;
+        }
+
+        .day2-confetti.square {
+            border-radius: 3px;
+        }
+
+        /* Day 2 Poem Section */
+        .day2-poem-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(168, 230, 207, 0.2) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 70px 50px;
+            max-width: 850px;
+            box-shadow: 0 25px 70px rgba(0, 184, 148, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day2-poem-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #0984e3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 50px;
+            font-weight: 800;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .day2-poem-line {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin: 25px 0;
+            display: block;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            font-weight: 500;
+            line-height: 2;
+            text-align: center;
+        }
+
+        .day2-poem-line.animate {
+            animation: day2LineReveal 1s ease-out forwards;
+        }
+
+        .day2-poem-line:nth-child(1) { animation-delay: 0.3s; }
+        .day2-poem-line:nth-child(2) { animation-delay: 0.6s; }
+        .day2-poem-line:nth-child(3) { animation-delay: 0.9s; }
+        .day2-poem-line:nth-child(4) { animation-delay: 1.2s; }
+        .day2-poem-line:nth-child(5) { animation-delay: 1.5s; }
+        .day2-poem-line:nth-child(6) { animation-delay: 1.8s; }
+
+        .day2-poem-line::before {
+            content: '✨';
+            position: absolute;
+            left: -30px;
+            opacity: 0;
+            animation: sparkleIn 0.5s ease-out forwards;
+            animation-delay: inherit;
+        }
+
+        /* Day 2 Sparkles */
+        .day2-sparkle {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: day2SparkleFloat 5s ease-in-out infinite;
+            z-index: 5;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+        }
+
+        /* Day 2 Parallax Stars */
+        .day2-star-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .day2-star {
+            position: absolute;
+            font-size: 2rem;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        /* Day 2 Music Container */
+        .day2-music-container {
+            position: sticky;
+            top: 67px;
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.95) 0%, rgba(132, 217, 172, 0.95) 100%);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 184, 148, 0.3);
+            animation: slideDown 0.8s ease-out;
+            border-bottom: 3px solid #00b894;
+        }
+
+        .day2-music-text {
+            font-size: 18px;
+            color: #00b894;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .day2-music-subtext {
+            font-size: 15px;
+            color: #00cec9;
+            margin-bottom: 12px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .day2-music-btn {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 6px 25px rgba(0, 184, 148, 0.4);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day2-music-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .day2-music-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .day2-music-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 184, 148, 0.5);
+        }
+
+        .day2-music-btn.playing {
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+            animation: day2Glow 2s ease-in-out infinite;
         }
 
         /* Animations */
@@ -334,22 +707,101 @@
             to { transform: translateY(-200vh) translateX(100px) rotate(720deg); opacity: 0; }
         }
 
+        /* Day 2 Animations */
+        @keyframes day2TitleFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.03); }
+        }
+
+        @keyframes float3D {
+            0%, 100% { 
+                transform: translateY(0) translateZ(0) rotateY(0deg); 
+            }
+            50% { 
+                transform: translateY(-20px) translateZ(50px) rotateY(180deg); 
+            }
+        }
+
+        @keyframes popBurst {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(2) rotate(180deg); opacity: 0.5; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes day2BalloonFloat {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) translateX(80px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes day2ConfettiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes day2LineReveal {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes sparkleIn {
+            to { opacity: 1; left: -40px; }
+        }
+
+        @keyframes day2SparkleFloat {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg) scale(1); 
+                opacity: 0.7; 
+            }
+            50% { 
+                transform: translateY(-40px) rotate(360deg) scale(1.3); 
+                opacity: 1; 
+            }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        @keyframes day2Glow {
+            0%, 100% { box-shadow: 0 6px 25px rgba(9, 132, 227, 0.4); }
+            50% { box-shadow: 0 6px 35px rgba(9, 132, 227, 0.7); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .welcome-title {
                 font-size: 2.2rem;
             }
 
-            .poem-section {
+            .day2-title {
+                font-size: 2.5rem;
+            }
+
+            .poem-section, .day2-poem-section {
                 padding: 40px 25px;
             }
 
-            .poem-line {
+            .poem-line, .day2-poem-line {
                 font-size: 1.1rem;
             }
 
-            .poem-title {
+            .poem-title, .day2-poem-title {
                 font-size: 1.6rem;
+            }
+
+            .tab-btn {
+                padding: 10px 25px;
+                font-size: 16px;
             }
         }
 
@@ -358,218 +810,624 @@
                 font-size: 1.8rem;
             }
 
-            .music-btn {
+            .day2-title {
+                font-size: 2rem;
+            }
+
+            .music-btn, .day2-music-btn {
                 padding: 12px 28px;
                 font-size: 16px;
             }
 
-            .poem-line {
+            .poem-line, .day2-poem-line {
                 font-size: 1rem;
             }
+
+            .tab-btn {
+                padding: 8px 20px;
+                font-size: 14px;
+            }
         }
-        /* Additional minimal responsive tweaks (non-intrusive) */
-        .music-btn-wrapper {
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .music-btn {
-            min-width: 110px;
-        }
+
         @media (max-width: 360px) {
-            .music-btn {
+            .music-btn, .day2-music-btn {
                 padding: 10px 18px;
                 font-size: 14px;
             }
             .welcome-title {
                 font-size: 1.6rem;
             }
+            .day2-title {
+                font-size: 1.7rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Music Container -->
-    <div class="music-container">
-        <div class="music-text">🎵 Tap here to turn on birthday music (optional)</div>
-        <div class="music-subtext">"Listen, please, to some music for you."</div>
-        <div class="music-btn-wrapper">
-            <span class="hand-emoji">👉</span>
-            <button class="music-btn" id="musicBtn">Play Music</button>
-            <button class="music-btn" id="stopMusicBtn">Stop Music</button>
-            <p id="musicStatus" style="display:none">Music Playing…</p>
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-day="1">🎈 Day 1</button>
+            <span class="tab-separator">|</span>
+            <button class="tab-btn" data-day="2">🎉 Day 2</button>
         </div>
     </div>
+        <!-- (puzzle removed from global scope - placed inside Day 2 container) -->
 
-    <!-- Section 1: Welcome -->
-    <div class="section welcome-section" id="section1">
-        <div class="confetti-bg" id="confettiBg"></div>
-        <h1 class="welcome-title">🎉 Day 1 — Birthday Countdown Begins! 🎂</h1>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="toastNotification">
+        🎵 Music stopped as you switched tabs
     </div>
 
-    <!-- Section 2: Poem -->
-    <div class="section poem-section" id="section2">
-        <h2 class="poem-title">✨ A Little Birthday Wish ✨</h2>
-        <div class="poem-container">
-            <div class="poem-line">Aaj ka din ek nayi khushi laaye,</div>
-            <div class="poem-line">Dil se nikli dua aapko muskuraaye,</div>
-            <div class="poem-line">Har pal meethi yaadein ban jaaye,</div>
-            <div class="poem-line">Aur birthday tak har din chamak udaye,</div>
-            <div class="poem-line">Khushiyon se bhari ho ye zindagi ki kahani! 🌟</div>
+    <!-- Day 1 Container -->
+    <div class="day-container active" id="day1">
+        <!-- Music Container -->
+        <div class="music-container">
+            <div class="music-text">🎵 Tap here to turn on birthday music (optional)</div>
+            <div class="music-subtext">"Listen, please, to some music for you."</div>
+            <div class="music-btn-wrapper">
+                <span class="hand-emoji">👉</span>
+                <button class="music-btn" id="musicBtn">Play Music</button>
+                <button class="music-btn" id="stopMusicBtn">Stop Music</button>
+                <p id="musicStatus" style="display:none">Music Playing…</p>
+            </div>
+        </div>
+
+        <!-- Section 1: Welcome -->
+        <div class="section welcome-section visible" id="section1">
+            <div class="confetti-bg" id="confettiBg"></div>
+            <h1 class="welcome-title">🎉 Day 1 — Birthday Countdown Begins! 🎂</h1>
+        </div>
+
+        <!-- Section 2: Poem -->
+        <div class="section poem-section visible" id="section2">
+            <h2 class="poem-title">✨ A Little Birthday Wish ✨</h2>
+            <div class="poem-container">
+                <div class="poem-line animate">Aaj ka din ek nayi khushi laaye,</div>
+                <div class="poem-line animate">Dil se nikli dua aapko muskuraaye,</div>
+                <div class="poem-line animate">Har pal meethi yaadein ban jaaye,</div>
+                <div class="poem-line animate">Aur birthday tak har din chamak udaye,</div>
+            <div class="poem-line animate">Khushiyon se bhari ho ye zindagi ki kahani! 🌟</div>
         </div>
     </div>
-
-
 
     <!-- Footer -->
     <div class="footer">
         🎁 More surprises coming… scroll tomorrow! 🎁
     </div>
+</div>
 
-    <audio id="bgMusic" loop>
-        <source src="birthday.mp3" type="audio/mpeg">
-    </audio>
+<!-- Day 2 Container -->
+<div class="day-container" id="day2">
+    <!-- Day 2 Music Container -->
+    <div class="day2-music-container">
+        <div class="day2-music-text">🎵 Day 2 Special Music! Tap to play</div>
+        <div class="day2-music-subtext">"A new melody for a special celebration!"</div>
+        <div class="music-btn-wrapper">
+            <span class="hand-emoji">👉</span>
+            <button class="day2-music-btn" id="day2MusicBtn">Play Day 2 Music</button>
+            <button class="day2-music-btn" id="day2StopMusicBtn">Stop Music</button>
+            <p id="day2MusicStatus" style="display:none">Music Playing…</p>
+        </div>
+    </div>
 
-    <script>
-        // Music Control
-        const musicBtn = document.getElementById('musicBtn');
-        const bgMusic = document.getElementById('bgMusic');
-        let isPlaying = false;
+    <!-- Day 2 Welcome Section -->
+    <div class="section day2-welcome visible">
+        <div class="day2-star-bg" id="day2StarBg"></div>
+        <h1 class="day2-title">🌟 Day 2 — The Joy Continues! 🎊</h1>
+        <p class="day2-subtitle">More smiles, more fun, more celebrations! 🎈</p>
+        
+        <!-- Floating 3D Elements -->
+        <div class="day2-floating-element" style="top: 10%; left: 15%;">🎁</div>
+        <div class="day2-floating-element" style="top: 20%; right: 20%; animation-delay: 0.5s;">⭐</div>
+        <div class="day2-floating-element" style="bottom: 30%; left: 10%; animation-delay: 1s;">🎀</div>
+        <div class="day2-floating-element" style="bottom: 15%; right: 15%; animation-delay: 1.5s;">✨</div>
+        <div class="day2-floating-element" style="top: 50%; left: 5%; animation-delay: 2s;">🎊</div>
+        <div class="day2-floating-element" style="top: 60%; right: 8%; animation-delay: 2.5s;">💫</div>
+    </div>
 
-        musicBtn.addEventListener('click', () => {
-            if (!isPlaying) {
-                bgMusic.play().catch(e => console.log('Music play failed'));
-                musicBtn.textContent = '🎵 Music Playing';
-                musicBtn.classList.add('playing');
-                isPlaying = true;
-            } else {
-                bgMusic.pause();
-                musicBtn.textContent = 'Play Music';
-                musicBtn.classList.remove('playing');
-                isPlaying = false;
-            }
-        });
+    <!-- Day 2 Poem Section -->
+    <div class="section day2-poem-section visible">
+        <h2 class="day2-poem-title">🌈 A Special Day 2 Message 🌈</h2>
+        <div class="poem-container">
+            <div class="day2-poem-line">Aaj ka din aapki rooh ki roshni ka jashn lage...</div>
+            <div class="day2-poem-line">Khushiyon ka har qatra aapka hee naam likha sa chale....</div>
+            <div class="day2-poem-line">Umeedon ke patte bhi aaj aap par hee muskuraye...</div>
+            <div class="day2-poem-line">Hawaon ki narm si chaal tumhe duaaon mein gungunaye....</div>
+            <div class="day2-poem-line">Iss saal aapki zindagi ek nayi nazm banke nikle...</div>
+            <div class="day2-poem-line">Sukoon, safalta, aur mithaas se poori tarah sajaayi hue.....</div>
+        </div>
+    </div>
 
-        // Scroll Animation for Sections
-        const sections = document.querySelectorAll('.section');
-        const observerOptions = {
-            threshold: 0.2,
-            rootMargin: '0px 0px -100px 0px'
-        };
+    <!-- Day 2 Footer -->
+    <!-- Day 2 Puzzle Section (Day 2 only) -->
+    <div class="section day2-puzzle-section visible">
+        <h2 class="day2-poem-title">🧩 Birthday Puzzle Reveal 🧩</h2>
+        <div id="puzzleContainer" style="display: grid; grid-template-columns: repeat(3, 120px); gap: 10px; justify-content: center; margin-top: 30px;"></div>
+        <div id="puzzleConfetti"></div>
+    </div>
 
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    
-                    // Animate poem lines when poem section is visible
-                    if (entry.target.id === 'section2') {
-                        const poemLines = entry.target.querySelectorAll('.poem-line');
-                        poemLines.forEach(line => line.classList.add('animate'));
+    <div class="footer">
+        🌟 Keep smiling, keep shining! More to come… 🌟
+    </div>
+</div>
+
+<!-- Audio Elements -->
+<audio id="bgMusic" loop>
+    <source src="birthday.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="day2BgMusic" loop>
+    <source src="birthday2.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    // Puzzle Setup - Only initialize in Day 2 tab
+    function initDay2Puzzle() {
+        const puzzleContainer = document.getElementById('puzzleContainer');
+        const confettiContainer = document.getElementById('puzzleConfetti');
+        if (!puzzleContainer || !confettiContainer) return;
+        puzzleContainer.innerHTML = '';
+        confettiContainer.innerHTML = '';
+        const finalMessage = "🎉 Happy Birthday, Sejal Ji! 🎉";
+        let blocks = [];
+        const size = 3; // 3x3
+        for (let i = 0; i < size*size; i++) {
+            let block = document.createElement('div');
+            block.classList.add('puzzle-block');
+            block.textContent = i + 1;
+            block.dataset.correct = i;
+            puzzleContainer.appendChild(block);
+            blocks.push(block);
+        }
+        // Shuffle blocks visually
+        blocks.sort(() => Math.random() - 0.5).forEach(b => puzzleContainer.appendChild(b));
+        // Drag & Drop Logic
+        let dragged = null;
+        blocks.forEach(block => {
+            block.draggable = true;
+            block.addEventListener('dragstart', e => {
+                dragged = block;
+                block.classList.add('dragging');
+            });
+            block.addEventListener('dragend', e => {
+                block.classList.remove('dragging');
+            });
+            block.addEventListener('dragover', e => e.preventDefault());
+            block.addEventListener('drop', e => {
+                if (dragged && dragged !== block) {
+                    let fromIndex = Array.from(puzzleContainer.children).indexOf(dragged);
+                    let toIndex = Array.from(puzzleContainer.children).indexOf(block);
+                    if (fromIndex > toIndex) {
+                        puzzleContainer.insertBefore(dragged, block);
+                    } else {
+                        puzzleContainer.insertBefore(dragged, block.nextSibling);
                     }
                 }
+                checkPuzzleComplete();
             });
-        }, observerOptions);
-
-        sections.forEach(section => sectionObserver.observe(section));
-
-        // Create Confetti
-        const confettiBg = document.getElementById('confettiBg');
-        const colors = ['#ff758c', '#ff7eb3', '#ffd1dc', '#a8e6cf', '#ffd89b', '#c2e9fb'];
-
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti-piece');
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = Math.random() * -20 + '%';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
-            confetti.style.animationDelay = Math.random() * 2 + 's';
-            
-            confetti.addEventListener('click', function() {
-                this.style.animation = 'popOut 0.6s ease-out forwards';
-                setTimeout(() => this.remove(), 600);
-            });
-            
-            confettiBg.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 8000);
+        });
+        function checkPuzzleComplete() {
+            // Check if blocks are in correct sequence (0,1,2,...,8)
+            const currentOrder = Array.from(puzzleContainer.children).map(b => parseInt(b.textContent)-1);
+            let isComplete = true;
+            for (let i = 0; i < currentOrder.length; i++) {
+                if (currentOrder[i] !== i) {
+                    isComplete = false;
+                    break;
+                }
+            }
+            if (isComplete) {
+                puzzleContainer.classList.add('completed');
+                triggerCelebration();
+            }
         }
-
-        for (let i = 0; i < 30; i++) {
-            setTimeout(createConfetti, i * 200);
+        function triggerCelebration() {
+            setTimeout(() => {
+                puzzleContainer.innerHTML = `<h2 style="font-size:2rem; color:#ff1493; text-align:center; margin-top:20px;">${finalMessage}</h2>`;
+                launchConfetti();
+            }, 800);
         }
-        setInterval(createConfetti, 600);
+        function launchConfetti() {
+            for(let i=0; i<100; i++){
+                let c = document.createElement('div');
+                c.classList.add('day2-confetti', 'circle');
+                c.style.backgroundColor = `hsl(${Math.random()*360}, 80%, 60%)`;
+                c.style.left = Math.random()*100 + '%';
+                c.style.top = '-20px';
+                c.style.width = c.style.height = (Math.random()*10+5) + 'px';
+                c.style.animationDuration = (Math.random()*2+2) + 's';
+                confettiContainer.appendChild(c);
+                c.addEventListener('animationend', ()=> c.remove());
+            }
+        }
+    }
 
-        // Floating Balloons
-        const balloonEmojis = ['🎈', '🎀', '🎁', '🎉', '🎊'];
+    // Only initialize puzzle when Day 2 tab is active
+    function handleTabSwitch() {
+        const day2Container = document.getElementById('day2');
+        if (day2Container && day2Container.classList.contains('active')) {
+            initDay2Puzzle();
+        }
+    }
+    document.querySelectorAll('.tab-btn[data-day="2"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setTimeout(handleTabSwitch, 400);
+        });
+    });
+    // If Day 2 is default, initialize immediately
+    window.addEventListener('DOMContentLoaded', () => {
+        handleTabSwitch();
+    });
+    // ========== TAB NAVIGATION ==========
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const day1Container = document.getElementById('day1');
+    const day2Container = document.getElementById('day2');
+    const toastNotification = document.getElementById('toastNotification');
+    
+    let currentDay = 1;
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetDay = parseInt(btn.getAttribute('data-day'));
+            
+            if (targetDay !== currentDay) {
+                // Stop all music when switching tabs
+                stopAllMusic();
+                
+                // Show toast notification
+                showToast();
+                
+                // Update active tab
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Switch containers with smooth transition
+                if (targetDay === 1) {
+                    day2Container.classList.remove('active');
+                    setTimeout(() => {
+                        day1Container.classList.add('active');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                } else {
+                    day1Container.classList.remove('active');
+                    setTimeout(() => {
+                        day2Container.classList.add('active');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        initDay2Animations();
+                    }, 100);
+                }
+                
+                currentDay = targetDay;
+            }
+        });
+    });
+
+    // ========== TOAST NOTIFICATION ==========
+    function showToast() {
+        toastNotification.classList.add('show');
+        setTimeout(() => {
+            toastNotification.classList.remove('show');
+        }, 3500);
+    }
+
+    // ========== MUSIC CONTROL ==========
+    function stopAllMusic() {
+        // Stop Day 1 music
+        if (bgMusic && !bgMusic.paused) {
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+            if (musicBtn) {
+                musicBtn.textContent = 'Play Music';
+                musicBtn.classList.remove('playing');
+            }
+            if (musicStatus) musicStatus.style.display = 'none';
+        }
         
-        function createFloatingBalloon() {
+        // Stop Day 2 music
+        if (day2BgMusic && !day2BgMusic.paused) {
+            day2BgMusic.pause();
+            day2BgMusic.currentTime = 0;
+            if (day2MusicBtn) {
+                day2MusicBtn.textContent = 'Play Day 2 Music';
+                day2MusicBtn.classList.remove('playing');
+            }
+            if (day2MusicStatus) day2MusicStatus.style.display = 'none';
+        }
+    }
+
+    // Day 1 Music Control
+    const musicBtn = document.getElementById('musicBtn');
+    const stopMusicBtn = document.getElementById('stopMusicBtn');
+    const bgMusic = document.getElementById('bgMusic');
+    const musicStatus = document.getElementById('musicStatus');
+    let isPlaying = false;
+
+    if (musicBtn && bgMusic) {
+        musicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            bgMusic.src = 'birthday.mp3';
+            bgMusic.loop = true;
+            bgMusic.play().catch(() => {});
+            musicBtn.textContent = 'Music On ✔';
+            musicBtn.classList.add('playing');
+            if (musicStatus) musicStatus.style.display = 'inline';
+            isPlaying = true;
+        }, true);
+    }
+
+    if (stopMusicBtn && bgMusic) {
+        stopMusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            try {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            } catch (err) {}
+            if (musicBtn) {
+                musicBtn.textContent = 'Play Music';
+                musicBtn.classList.remove('playing');
+            }
+            if (musicStatus) musicStatus.style.display = 'none';
+            isPlaying = false;
+        }, true);
+    }
+
+    // Day 2 Music Control
+    const day2MusicBtn = document.getElementById('day2MusicBtn');
+    const day2StopMusicBtn = document.getElementById('day2StopMusicBtn');
+    const day2BgMusic = document.getElementById('day2BgMusic');
+    const day2MusicStatus = document.getElementById('day2MusicStatus');
+    let isDay2Playing = false;
+
+    if (day2MusicBtn && day2BgMusic) {
+        day2MusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            day2BgMusic.src = 'birthday2.mp3';
+            day2BgMusic.loop = true;
+            day2BgMusic.play().catch(() => {});
+            day2MusicBtn.textContent = 'Music On ✔';
+            day2MusicBtn.classList.add('playing');
+            if (day2MusicStatus) day2MusicStatus.style.display = 'inline';
+            isDay2Playing = true;
+        }, true);
+    }
+
+    if (day2StopMusicBtn && day2BgMusic) {
+        day2StopMusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            try {
+                day2BgMusic.pause();
+                day2BgMusic.currentTime = 0;
+            } catch (err) {}
+            if (day2MusicBtn) {
+                day2MusicBtn.textContent = 'Play Day 2 Music';
+                day2MusicBtn.classList.remove('playing');
+            }
+            if (day2MusicStatus) day2MusicStatus.style.display = 'none';
+            isDay2Playing = false;
+        }, true);
+    }
+
+    // ========== DAY 1 ANIMATIONS ==========
+    
+    // Scroll Animation for Sections
+    const sections = document.querySelectorAll('.section');
+    const observerOptions = {
+        threshold: 0.2,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                
+                // Animate poem lines when poem section is visible
+                if (entry.target.id === 'section2') {
+                    const poemLines = entry.target.querySelectorAll('.poem-line');
+                    poemLines.forEach(line => line.classList.add('animate'));
+                }
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => sectionObserver.observe(section));
+
+    // Create Confetti
+    const confettiBg = document.getElementById('confettiBg');
+    const colors = ['#ff758c', '#ff7eb3', '#ffd1dc', '#a8e6cf', '#ffd89b', '#c2e9fb'];
+
+    function createConfetti() {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti-piece');
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = Math.random() * -20 + '%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        
+        confetti.addEventListener('click', function() {
+            this.style.animation = 'popOut 0.6s ease-out forwards';
+            setTimeout(() => this.remove(), 600);
+        });
+        
+        confettiBg.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 8000);
+    }
+
+    for (let i = 0; i < 30; i++) {
+        setTimeout(createConfetti, i * 200);
+    }
+    setInterval(createConfetti, 600);
+
+    // Floating Balloons
+    const balloonEmojis = ['🎈', '🎀', '🎁', '🎉', '🎊'];
+    
+    function createFloatingBalloon() {
+        const balloon = document.createElement('div');
+        balloon.classList.add('floating-balloon');
+        balloon.textContent = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+        balloon.style.left = Math.random() * 90 + '%';
+        balloon.style.bottom = '-50px';
+        balloon.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        
+        balloon.addEventListener('click', function() {
+            this.style.animation = 'flyAway 1.5s ease-out forwards';
+            setTimeout(() => this.remove(), 1500);
+        });
+        
+        document.body.appendChild(balloon);
+        setTimeout(() => balloon.remove(), 12000);
+    }
+
+    setInterval(createFloatingBalloon, 2000);
+
+    // Sparkles
+    function createSparkle() {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        sparkle.textContent = '✨';
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.top = Math.random() * 100 + '%';
+        sparkle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        sparkle.style.animationDelay = Math.random() * 2 + 's';
+        
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 6000);
+    }
+
+    setInterval(createSparkle, 1000);
+
+    // ========== DAY 2 ANIMATIONS ==========
+    
+    function initDay2Animations() {
+        // Animate Day 2 poem lines
+        const day2PoemLines = document.querySelectorAll('.day2-poem-line');
+        day2PoemLines.forEach(line => line.classList.add('animate'));
+        
+        // Create Day 2 confetti
+        createDay2Confetti();
+        
+        // Create Day 2 balloons
+        createDay2Balloons();
+        
+        // Create Day 2 sparkles
+        createDay2Sparkles();
+        
+        // Create Day 2 stars
+        createDay2Stars();
+    }
+
+    // Day 2 Confetti
+    function createDay2Confetti() {
+        const day2Welcome = document.querySelector('.day2-welcome');
+        if (!day2Welcome) return;
+        
+        const day2Colors = ['#00b894', '#00cec9', '#74b9ff', '#a29bfe', '#fd79a8', '#fdcb6e'];
+        const shapes = ['star', 'circle', 'square'];
+        
+        for (let i = 0; i < 40; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.classList.add('day2-confetti');
+                confetti.classList.add(shapes[Math.floor(Math.random() * shapes.length)]);
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = Math.random() * -30 + '%';
+                confetti.style.background = day2Colors[Math.floor(Math.random() * day2Colors.length)];
+                confetti.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                
+                confetti.addEventListener('click', function() {
+                    this.style.animation = 'popBurst 0.6s ease-out forwards';
+                    setTimeout(() => this.remove(), 600);
+                });
+                
+                day2Welcome.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 10000);
+            }, i * 150);
+        }
+    }
+
+    // Day 2 Balloons
+    function createDay2Balloons() {
+        const balloons = ['🎈', '🎀', '🎁', '🎉', '🎊', '💝', '🌟', '⭐'];
+        
+        function addBalloon() {
+            if (currentDay !== 2) return;
+            
             const balloon = document.createElement('div');
-            balloon.classList.add('floating-balloon');
-            balloon.textContent = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+            balloon.classList.add('day2-balloon');
+            balloon.textContent = balloons[Math.floor(Math.random() * balloons.length)];
             balloon.style.left = Math.random() * 90 + '%';
-            balloon.style.bottom = '-50px';
-            balloon.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            balloon.style.bottom = '-80px';
+            balloon.style.animationDuration = (Math.random() * 5 + 8) + 's';
             
             balloon.addEventListener('click', function() {
-                this.style.animation = 'flyAway 1.5s ease-out forwards';
-                setTimeout(() => this.remove(), 1500);
+                this.style.animation = 'flyAway 1.8s ease-out forwards';
+                setTimeout(() => this.remove(), 1800);
             });
             
             document.body.appendChild(balloon);
-            setTimeout(() => balloon.remove(), 12000);
+            setTimeout(() => balloon.remove(), 15000);
         }
+        
+        setInterval(addBalloon, 2500);
+        for (let i = 0; i < 3; i++) {
+            setTimeout(addBalloon, i * 800);
+        }
+    }
 
-        setInterval(createFloatingBalloon, 2000);
-
-        // Sparkles
-        function createSparkle() {
+    // Day 2 Sparkles
+    function createDay2Sparkles() {
+        function addSparkle() {
+            if (currentDay !== 2) return;
+            
             const sparkle = document.createElement('div');
-            sparkle.classList.add('sparkle');
-            sparkle.textContent = '✨';
+            sparkle.classList.add('day2-sparkle');
+            sparkle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
             sparkle.style.left = Math.random() * 100 + '%';
             sparkle.style.top = Math.random() * 100 + '%';
-            sparkle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            sparkle.style.animationDuration = (Math.random() * 3 + 4) + 's';
             sparkle.style.animationDelay = Math.random() * 2 + 's';
             
             document.body.appendChild(sparkle);
-            setTimeout(() => sparkle.remove(), 6000);
+            setTimeout(() => sparkle.remove(), 8000);
         }
-
-        setInterval(createSparkle, 1000);
-
-
-    </script>
-    <script>
-        // Added listener for music per user request.
-        // Uses capture phase to ensure exact behavior without modifying existing handlers.
-        const musicStatus = document.getElementById('musicStatus');
-        const stopBtn = document.getElementById('stopMusicBtn');
-        if (musicBtn && bgMusic) {
-            musicBtn.addEventListener('click', function(e) {
-                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-                // Ensure correct source and looping
-                bgMusic.src = 'birthday.mp3';
-                bgMusic.loop = true;
-                bgMusic.play().catch(() => {});
-                musicBtn.textContent = 'Music On ✔';
-                musicBtn.classList.add('playing');
-                if (musicStatus) musicStatus.style.display = 'inline';
-            }, true);
+        
+        setInterval(addSparkle, 1200);
+        for (let i = 0; i < 5; i++) {
+            setTimeout(addSparkle, i * 300);
         }
+    }
 
-        if (stopBtn && bgMusic) {
-            stopBtn.addEventListener('click', function(e) {
-                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-                try {
-                    bgMusic.pause();
-                    bgMusic.currentTime = 0;
-                } catch (err) {}
-                if (musicBtn) {
-                    musicBtn.textContent = 'Play Music';
-                    musicBtn.classList.remove('playing');
-                }
-                if (musicStatus) musicStatus.style.display = 'none';
-            }, true);
+    // Day 2 Stars
+    function createDay2Stars() {
+        const starBg = document.getElementById('day2StarBg');
+        if (!starBg) return;
+        
+        for (let i = 0; i < 20; i++) {
+            const star = document.createElement('div');
+            star.classList.add('day2-star');
+            star.textContent = '⭐';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+            
+            starBg.appendChild(star);
         }
-    </script>
-</body>
-</html>
+    }
+
+    // Add click interactions to Day 2 floating elements
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('day2-floating-element')) {
+            e.target.style.animation = 'popBurst 0.8s ease-out forwards';
+            setTimeout(() => {
+                e.target.style.animation = '';
+            }, 800);
+        }
+    });
+
+</script>
