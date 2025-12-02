@@ -237,7 +237,7 @@
             transform: translateY(0);
         }
 
-        /* Day Container */
+        /* Day Container / Tab content handling */
         .day-container {
             display: none;
         }
@@ -245,6 +245,11 @@
         .day-container.active {
             display: block;
         }
+
+        /* Ensure .tab-content sections are hidden by default; .active will be shown
+           JS will also explicitly set inline styles on switch for robustness */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         /* Section 1: Welcome */
         .welcome-section {
@@ -841,6 +846,111 @@
                 font-size: 1.7rem;
             }
         }
+        /* ========== DAY 3 SAMOSA POWER-UP (prefixed .day3-) ========== */
+        .day3-powerup { max-width:1000px; margin:18px auto; }
+        .day3-powerup-inner { position:relative; border-radius:14px; padding:10px; }
+        /* hide Day3 meter UI by default; shown only when Day 3 is active */
+        .day-container:not(.active) .day3-meter-wrap { display:none }
+        /* meter is now positioned inside the samosa area (absolute), not fixed */
+        .day3-meter-wrap { position:absolute; right:10px; top:10px; width:220px; z-index:20; background:linear-gradient(135deg,#f7fffb,#e6fff2); padding:8px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.06) }
+        .day3-meter-label { font-weight:700; color:#00796b; font-size:14px; margin-bottom:8px; text-align:center }
+        .day3-meter { width:100%; height:14px; background:linear-gradient(90deg,#dff3ef,#cfeee2); border-radius:999px; overflow:hidden }
+        .day3-meter-fill { height:100%; background:linear-gradient(90deg,#00b894,#74d6b6); width:0%; transition:width 160ms linear }
+        .day3-samosa-zone { position:relative; height:420px; border-radius:12px; background: linear-gradient(180deg,#f0fffb,#e6fff2); overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        .day3-samosa-area { position:relative; }
+        .day3-samosa { position:absolute; width:56px; height:56px; font-size:34px; transform:translateY(-80px); will-change:transform; cursor:pointer; user-select:none }
+        .day3-shake { animation: day3ScreenShake 420ms ease-in-out }
+        @keyframes day3ScreenShake { 0%{transform:translateY(0)}25%{transform:translateY(-6px)}50%{transform:translateY(4px)}75%{transform:translateY(-3px)}100%{transform:translateY(0)} }
+        .day3-confetti-layer { position:fixed; inset:0; pointer-events:none; z-index:4300 }
+        .day3-explosion { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(0); width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,#fff,#ffd89b); z-index:4400; opacity:0; animation: day3Explosion 800ms ease-out forwards }
+        @keyframes day3Explosion { 0%{transform:translate(-50%,-50%) scale(0); opacity:1} 60%{transform:translate(-50%,-50%) scale(1.1); opacity:1} 100%{transform:translate(-50%,-50%) scale(1.4); opacity:0} }
+        /* huge text hidden unless Day 3 active */
+        .day3-huge-text { display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-120%); z-index:4450; font-size:36px; font-weight:900; color:#ff1493; text-align:center; text-shadow:0 8px 30px rgba(255,20,147,0.18); opacity:0 }
+        .day-container#day3.active .day3-huge-text { display:block }
+        .day3-huge-text.show { animation: day3HugeTextIn 900ms cubic-bezier(.2,.9,.2,1) forwards }
+        @keyframes day3HugeTextIn { 0%{transform:translate(-50%,-120%) scale(0.9); opacity:0} 60%{transform:translate(-50%,-50%) scale(1.06); opacity:1} 100%{transform:translate(-50%,-50%) scale(1);} }
+        .day3-balloon { position:fixed; font-size:2.4rem; z-index:4300; pointer-events:none; animation: day3BalloonRise 6s linear forwards }
+        @keyframes day3BalloonRise { to{ transform: translateY(-140vh); opacity:0 } }
+        @media (max-width:600px){ .day3-meter-wrap{ right:10px; width:200px; top:80px } .day3-samosa{ width:48px; height:48px; font-size:28px } .day3-huge-text{ font-size:24px } }
+        /* ========== DAY 3 STYLES (Campus Chaos Challenge) ========== */
+        .day3-music-container {
+            position: sticky;
+            top: 67px;
+            background: linear-gradient(135deg, rgba(168,230,207,0.96), rgba(194,233,251,0.96));
+            padding: 14px 18px;
+            text-align: center;
+            z-index: 1200;
+            box-shadow: 0 8px 30px rgba(132,217,172,0.18);
+            border-bottom: 3px solid rgba(0,184,148,0.12);
+        }
+        .day3-music-text { color:#00796b; font-weight:700; font-size:15px }
+        .day3-music-subtext { color:#009688; font-style:italic; margin-bottom:6px }
+
+        .day3-game { max-width:980px; margin:18px auto; padding:20px; border-radius:18px; background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(238,255,250,0.8)); box-shadow: 0 18px 50px rgba(0,0,0,0.06); }
+        .day3-progress { display:flex; align-items:center; gap:12px; margin-bottom:14px }
+        .day3-progress-bar { flex:1; height:12px; background: linear-gradient(90deg,#c2e9fb,#a8e6cf); border-radius:999px; overflow:hidden; position:relative }
+        .day3-progress-bar .day3-fill { position:absolute; left:0; top:0; height:100%; width:33%; background: linear-gradient(90deg,#00b894,#74d6b6); transition: width 360ms ease }
+        /* hide Level 1/3 text and progress bar as requested (Day 3 only) */
+        .day-container#day3 .day3-progress-text { display: none !important; }
+        .day-container#day3 .day3-progress-bar { display: none !important; }
+
+        .day3-level { text-align:center; padding:12px }
+        .day3-options { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:12px }
+        .day3-option { background: linear-gradient(135deg,#e0f7fa,#d0f0e5); border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.06); transition: transform 180ms ease, box-shadow 180ms ease }
+        .day3-option:focus { outline:3px solid rgba(0,150,136,0.18) }
+        .day3-option:hover { transform: translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,0.12) }
+        .day3-option.correct { animation: day3Pop 320ms cubic-bezier(.2,.9,.3,1); box-shadow: 0 18px 40px rgba(0,200,150,0.18); background: linear-gradient(135deg,#a8e6cf,#84d9ac); color:#fff }
+        @keyframes day3Pop { 0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)} }
+
+        /* Level 1 - Samosa Catcher */
+        .day3-samosa-area { position:relative; height:260px; background: linear-gradient(180deg,#f0fffb,#e6fff2); border-radius:12px; overflow:hidden; margin-top:12px }
+        .day3-samosa { position:absolute; width:48px; height:48px; font-size:30px; transform: translateY(-60px); will-change: transform; cursor:pointer }
+        .day3-samosa.catch-anim { animation: day3SamosaPop 220ms ease forwards }
+        @keyframes day3SamosaPop { 0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(0);opacity:0} }
+
+        /* Level 2 - Bunk Detector */
+        .day3-bunk-list { display:flex; flex-direction:column; gap:8px; align-items:center; }
+        .day3-excuse { background:linear-gradient(135deg,#fff,#e8fff4); padding:10px 14px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,0.05); cursor:pointer }
+
+        /* Level 3 - Assignment Escape */
+        .day3-folders { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px }
+        .day3-folder { width:110px; height:90px; background:linear-gradient(135deg,#f7fff8,#e0f7ec); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; cursor:pointer; box-shadow:0 10px 25px rgba(0,0,0,0.06) }
+
+        /* Reveal Card */
+        .day3-reveal-card { position: fixed; left:50%; top:50%; transform: translate(-50%,-50%); z-index:4500; background: linear-gradient(135deg,#ffffff,#e8fff4); padding:26px; border-radius:16px; box-shadow: 0 40px 120px rgba(0,0,0,0.25); text-align:center; width:88%; max-width:460px }
+        .day3-reveal-card h2 { font-size:1.5rem; color:#ff1493; margin-bottom:6px }
+        .day3-reveal-badge { display:inline-block; padding:10px 14px; border-radius:10px; background:linear-gradient(135deg,#ffd1dc,#ffc0e6); font-weight:800; color:#7a0033; margin-top:8px }
+        .day3-close { position:absolute; right:10px; top:8px; background:transparent; border:none; font-size:18px }
+
+        /* Particles */
+        .day3-confetti-piece { position: fixed; width:10px; height:12px; border-radius:3px; z-index:4000; pointer-events:none; animation: day3ConfettiFall linear forwards }
+        @keyframes day3ConfettiFall { to { transform: translateY(110vh) rotate(360deg); opacity:0 } }
+        .day3-firework { position: fixed; width:8px; height:8px; border-radius:50%; z-index:4100; pointer-events:none; background:radial-gradient(circle,#fff,#ffd89b); animation: day3Firework 700ms ease-out forwards }
+        @keyframes day3Firework { 0% { transform: scale(0); opacity:1 } 100% { transform: scale(8); opacity:0 } }
+        .day3-balloon { position: fixed; font-size:2.2rem; z-index:4100; pointer-events:none; animation: day3BalloonFloat 6s linear forwards }
+        @keyframes day3BalloonFloat { to { transform: translateY(-140vh); opacity:0 } }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px){ .day3-samosa { width:42px; height:42px; font-size:26px } .day3-folder{ width:90px; height:74px } }
+        @media (max-width:480px){ .day3-game{padding:14px} .day3-progress-text{display:none} }
+
+    </style>
+    <style>
+        /* Day3 crackers + celebration */
+        .day3-cracker { position: fixed; left:50%; top:50%; width:8px; height:18px; border-radius:3px; transform: translate(-50%,-50%) scale(0); opacity:1; z-index:4600; transition: transform 900ms cubic-bezier(.2,.9,.2,1), opacity 900ms ease; pointer-events:none; }
+        .day3-celebrate { position:fixed; left:50%; top:45%; transform:translate(-50%,-50%) scale(0.92); z-index:4700; font-size:40px; font-weight:900; color:#ff1493; text-align:center; text-shadow:0 10px 40px rgba(255,20,147,0.16); opacity:0; transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease; }
+        .day3-celebrate.show { transform:translate(-50%,-50%) scale(1); opacity:1; }
+        /* Banner for one-time celebration */
+        .day3-banner { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.96); z-index:100001; color:#fff; font-size:56px; font-weight:900; text-align:center; padding:18px 28px; border-radius:14px; background:linear-gradient(90deg, rgba(255,20,147,0.95), rgba(255,117,140,0.95)); box-shadow: 0 20px 60px rgba(255,20,147,0.12); opacity:0; filter:drop-shadow(0 8px 30px rgba(255,20,147,0.25)); transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease, box-shadow 700ms ease; }
+        .day3-banner.show { transform:translate(-50%,-50%) scale(1.06); opacity:1; box-shadow: 0 30px 100px rgba(255,20,147,0.28); }
+        @media (max-width:600px){ .day3-banner{ font-size:28px; padding:12px 16px } }
+        @media (max-width:600px){ .day3-celebrate{ font-size:24px; top:50% } .day3-cracker{ width:6px; height:14px } }
+        /* Fade-in banner animation (opacity 0 -> 1, scale 0.7 -> 1) */
+        @keyframes fadeInBanner {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        .fadeInBanner { animation: fadeInBanner 1.3s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -850,6 +960,8 @@
             <button class="tab-btn active" data-day="1">🎈 Day 1</button>
             <span class="tab-separator">|</span>
             <button class="tab-btn" data-day="2">🎉 Day 2</button>
+            <span class="tab-separator">|</span>
+            <button class="tab-btn" data-day="3">🎭 Day 3</button>
         </div>
     </div>
         <!-- (puzzle removed from global scope - placed inside Day 2 container) -->
@@ -861,7 +973,7 @@
     </div>
 
     <!-- Day 1 Container -->
-    <div class="day-container active" id="day1">
+    <div class="day-container tab-content active" id="day1">
         <!-- Music Container -->
         <div class="music-container">
             <div class="music-text">🎵 Tap here to turn on birthday music (optional)</div>
@@ -899,7 +1011,7 @@
 </div>
 
 <!-- Day 2 Container -->
-<div class="day-container" id="day2">
+<div class="day-container tab-content" id="day2">
     <!-- Day 2 Music Container -->
     <div class="day2-music-container">
         <div class="day2-music-text">🎵 Day 2 Special Music! Tap to play</div>
@@ -931,11 +1043,11 @@
     <div class="section day2-poem-section visible">
         <h2 class="day2-poem-title">🌈 A Special Day 2 Message 🌈</h2>
         <div class="poem-container">
-            <div class="day2-poem-line">Aaj ka din aapki rooh ki roshni ka jashn lage...</div>
-            <div class="day2-poem-line">Khushiyon ka har qatra aapka hee naam likha sa chale....</div>
-            <div class="day2-poem-line">Umeedon ke patte bhi aaj aap par hee muskuraye...</div>
+            <div class="day2-poem-line">Aaj ka din tumhaari rooh ki roshni ka jashn lage...</div>
+            <div class="day2-poem-line">Khushiyon ka har qatra tumhaare hi naam likha sa chale....</div>
+            <div class="day2-poem-line">Umeedon ke patte bhi aaj tum par hi muskuraye...</div>
             <div class="day2-poem-line">Hawaon ki narm si chaal tumhe duaaon mein gungunaye....</div>
-            <div class="day2-poem-line">Iss saal aapki zindagi ek nayi nazm banke nikle...</div>
+            <div class="day2-poem-line">Iss saal tumhaari zindagi ek nayi nazm banke nikle...</div>
             <div class="day2-poem-line">Sukoon, safalta, aur mithaas se poori tarah sajaayi hue.....</div>
         </div>
     </div>
@@ -954,12 +1066,95 @@
 </div>
 
 <!-- Audio Elements -->
+<!-- Day 3 Container -->
+<div class="day-container tab-content" id="day3" aria-hidden="true">
+    <!-- Day 3 Music Container -->
+    <div class="day3-music-container">
+        <div class="day3-music-text">🎵 Day 3 — Campus Chaos Challenge</div>
+        <div class="day3-music-subtext">(optional background: birthday3.mp3)</div>
+        <div class="music-btn-wrapper">
+            <span class="hand-emoji">👉</span>
+            <button class="music-btn day3-music-btn" id="day3MusicBtn">Play Day 3 Music</button>
+            <button class="music-btn day3-music-btn" id="day3StopMusicBtn">Stop Music</button>
+            <p id="day3MusicStatus" style="display:none">Music Playing…</p>
+        </div>
+    </div>
+
+    <!-- Day 3 Intro -->
+    <div class="section day3-welcome visible">
+        <h1 class="day2-title">🎉 Day 3 — Birthday Bash 🎂</h1>
+        <p class="day2-subtitle">A joyful finale full of games, treats, and a special reveal — catch samosas to unlock the birthday surprise!</p>
+    </div>
+
+    <!-- Day 3 Game -->
+    <div class="section day2-poem-section visible day3-game" id="day3Game" aria-live="polite">
+        <div class="day3-game-inner" role="application">
+            <div class="day3-levels" id="day3Levels">
+                <!-- Level 1: Samosa Catcher -->
+                <div class="day3-level" id="day3Level1" data-level="1">
+                    <div class="day3-progress" style="text-align:center; margin-bottom:10px;" aria-hidden="false">
+                        <div class="day3-progress-bar" id="day3ProgressBar" aria-hidden="true" style="max-width:420px; margin:0 auto;"><!-- .day3-fill inserted by JS --></div>
+                        <div class="day3-progress-text" id="day3ProgressText">Level 1 / 3</div>
+                    </div>
+                    <h3>Samosa Catcher</h3>
+                    <p>Tap/click falling samosas to catch them — each catch plays a pop!</p>
+                    <div class="day3-samosa-area" id="day3SamosaArea" aria-label="Samosa catcher area">
+                        <div class="day3-meter-wrap" id="day3MeterWrap" aria-hidden="true">
+                            <div class="day3-meter-label">Catch 10 samosas to unlock the surprise!</div>
+                            <div class="day3-meter" id="day3Meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                <div class="day3-meter-fill" id="day3MeterFill" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <!-- samosas generated by JS -->
+                    </div>
+                    <div style="margin-top:10px; text-align:center">Caught: <span id="caughtCount">0</span> &nbsp;&nbsp; Target: <span id="targetCount">10</span></div>
+                </div>
+
+                <!-- Level 2: Bunk Detector -->
+                <div class="day3-level" id="day3Level2" data-level="2" style="display:none">
+                    <h3>Bunk Detector</h3>
+                    <p>Choose the funniest excuse — some open a silly dialog.</p>
+                    <div class="day3-bunk-list" id="day3BunkList" role="list">
+                        <!-- excuses injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Level 3: Assignment Escape Mission -->
+                <div class="day3-level" id="day3Level3" data-level="3" style="display:none">
+                    <h3>Assignment Escape Mission</h3>
+                    <p>Open folders — one hides the surprise!</p>
+                    <div class="day3-folders" id="day3Folders">
+                        <!-- folders injected by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Reveal Placeholder -->
+            <div class="day3-final" id="day3Final" style="display:none" role="region" aria-label="Final reveal"></div>
+
+            <div class="day3-controls" id="day3Controls" style="margin-top:18px; text-align:center;">
+                <button id="day3ReplayBtn" class="music-btn" style="display:none">Play Again</button>
+            </div>
+            <!-- Poem placeholder (empty) -->
+            <div id="day3PoemPlaceholder" style="max-width:800px;margin:18px auto;padding:24px;border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,0.6),rgba(240,255,250,0.6));min-height:80px;">
+                <!-- Reserved for a poem; intentionally left blank -->
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+
 <audio id="bgMusic" loop>
     <source src="birthday.mp3" type="audio/mpeg">
 </audio>
 
 <audio id="day2BgMusic" loop>
     <source src="birthday2.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="day3BgMusic" loop>
+    <source src="birthday3.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -970,7 +1165,7 @@
         if (!puzzleContainer || !confettiContainer) return;
         puzzleContainer.innerHTML = '';
         confettiContainer.innerHTML = '';
-        const finalMessage = "🎉 Happy Birthday, Sejal Ji! 🎉";
+        const finalMessage = "🎉 Happy Birthday, Sejal Jiii! 🎉";
         let blocks = [];
         const size = 3; // 3x3
         for (let i = 0; i < size*size; i++) {
@@ -1056,8 +1251,16 @@
             setTimeout(handleTabSwitch, 400);
         });
     });
-    // If Day 2 is default, initialize immediately
+    // Initialize tab-content display: hide all except Day 1 by default
     window.addEventListener('DOMContentLoaded', () => {
+        // hide all tab-content sections
+        document.querySelectorAll('.tab-content').forEach(tc => {
+            tc.style.display = 'none';
+            tc.classList.remove('active');
+        });
+        const d1 = document.getElementById('day1');
+        if (d1) { d1.style.display = 'block'; d1.classList.add('active'); }
+        // run Day 2 init if needed
         handleTabSwitch();
     });
     // ========== TAB NAVIGATION ==========
@@ -1071,34 +1274,35 @@
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetDay = parseInt(btn.getAttribute('data-day'));
-            
+
             if (targetDay !== currentDay) {
                 // Stop all music when switching tabs
                 stopAllMusic();
-                
+
                 // Show toast notification
                 showToast();
-                
-                // Update active tab
+
+                // Update active tab styling
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
-                // Switch containers with smooth transition
-                if (targetDay === 1) {
-                    day2Container.classList.remove('active');
-                    setTimeout(() => {
-                        day1Container.classList.add('active');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 100);
-                } else {
-                    day1Container.classList.remove('active');
-                    setTimeout(() => {
-                        day2Container.classList.add('active');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        initDay2Animations();
-                    }, 100);
+
+                // Hide all tab-content sections explicitly and remove active class
+                const contents = document.querySelectorAll('.tab-content');
+                contents.forEach(c => { c.classList.remove('active'); c.style.display = 'none'; });
+
+                // Show the selected container and mark active
+                const targetContainer = document.getElementById('day' + targetDay);
+                if (targetContainer) {
+                    targetContainer.classList.add('active');
+                    targetContainer.style.display = 'block';
                 }
-                
+
+                // Run any per-day initializers
+                if (targetDay === 2) {
+                    setTimeout(() => initDay2Animations(), 120);
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 currentDay = targetDay;
             }
         });
@@ -1134,6 +1338,21 @@
                 day2MusicBtn.classList.remove('playing');
             }
             if (day2MusicStatus) day2MusicStatus.style.display = 'none';
+        }
+        
+        // Stop Day 3 music (if present)
+        try {
+            if (typeof day3BgMusic !== 'undefined' && day3BgMusic && !day3BgMusic.paused) {
+                day3BgMusic.pause();
+                day3BgMusic.currentTime = 0;
+                if (typeof day3MusicBtn !== 'undefined' && day3MusicBtn) {
+                    day3MusicBtn.textContent = 'Play Day 3 Music';
+                    day3MusicBtn.classList.remove('playing');
+                }
+                if (typeof day3MusicStatus !== 'undefined' && day3MusicStatus) day3MusicStatus.style.display = 'none';
+            }
+        } catch (err) {
+            // swallow any errors if Day 3 audio isn't present
         }
     }
 
@@ -1429,5 +1648,271 @@
             }, 800);
         }
     });
+
+        /* Removed standalone Day 3 power-up IIFE — consolidated into Campus Chaos Level 1. */
+
+    /* DAY 3 — Campus Chaos Challenge (isolated) */
+    (function(){
+        // Scoped selectors and state
+        const day3Container = document.getElementById('day3');
+        const musicBtn = document.getElementById('day3MusicBtn');
+        const stopBtn = document.getElementById('day3StopMusicBtn');
+        const musicStatus = document.getElementById('day3MusicStatus');
+        const bg = document.getElementById('day3BgMusic');
+        const samosaArea = document.getElementById('day3SamosaArea');
+        const samosaScoreEl = document.getElementById('caughtCount');
+        const bunkList = document.getElementById('day3BunkList');
+        const foldersWrap = document.getElementById('day3Folders');
+        const progressBar = document.getElementById('day3ProgressBar');
+        const progressText = document.getElementById('day3ProgressText');
+        const finalRegion = document.getElementById('day3Final');
+        const replayBtn = document.getElementById('day3ReplayBtn');
+        let currentLevel = 1;
+        let caught = 0;
+        const TARGET = 10;
+        let day3Playing = false;
+
+        // Safe audio play helper
+        function safePlayAudio(a){ try{ a.play().catch(()=>{}); }catch(e){} }
+
+        // Music controls (mirror Day1/Day2 patterns)
+        if (musicBtn && bg){ musicBtn.addEventListener('click', function(e){ if (e.stopImmediatePropagation) e.stopImmediatePropagation(); bg.src = 'birthday3.mp3'; bg.loop = true; safePlayAudio(bg); musicBtn.textContent = 'Music On ✔'; musicBtn.classList.add('playing'); if (musicStatus) musicStatus.style.display = 'inline'; day3Playing = true; }, true); }
+        if (stopBtn && bg){ stopBtn.addEventListener('click', function(e){ if (e.stopImmediatePropagation) e.stopImmediatePropagation(); try{ bg.pause(); bg.currentTime = 0; }catch(err){} if (musicBtn){ musicBtn.textContent = 'Play Day 3 Music'; musicBtn.classList.remove('playing'); } if (musicStatus) musicStatus.style.display = 'none'; day3Playing = false; }, true); }
+
+        // Progress
+        function setProgress(level){ currentLevel = level; const pct = (level/3)*100; let fill = progressBar.querySelector('.day3-fill'); if (!fill){ fill = document.createElement('div'); fill.className = 'day3-fill'; fill.style.height='100%'; fill.style.width='0%'; fill.style.background='linear-gradient(90deg,#00b894,#74d6b6)'; fill.style.transition='width 360ms ease'; progressBar.appendChild(fill); } fill.style.width = pct + '%'; if (progressText) progressText.textContent = `Level ${level} / 3`; }
+
+        const SAMOSA_TARGET = 10; // legacy constant (kept for compatibility)
+        const meterFillEl = document.getElementById('day3MeterFill');
+        const meterWrapEl = document.getElementById('day3MeterWrap');
+
+        /* ---------- LEVEL 1: Samosa Catcher ---------- */
+        const samosaEmojis = ['🥟','🥟','🫓','🍱']; // playful
+        let samosaTimer = null;
+        function startLevel1(){ setProgress(1); caught = 0; if (samosaScoreEl) samosaScoreEl.textContent = '0'; if (!samosaArea) return; samosaArea.innerHTML = '';
+            // reset meter UI
+            if (meterFillEl) { meterFillEl.style.width = '0%'; meterFillEl.setAttribute('aria-valuenow', '0'); }
+            if (meterWrapEl) { meterWrapEl.setAttribute('aria-hidden', 'false'); }
+            // spawn samosas more frequently
+            clearInterval(samosaTimer);
+            samosaTimer = setInterval(()=> spawnSamosa(), 350);
+            // stop level after extended time (30s)
+            setTimeout(()=>{ clearInterval(samosaTimer); }, 30000);
+        }
+        function spawnSamosa(){ if (!samosaArea) return; const s = document.createElement('div'); s.className = 'day3-samosa'; s.textContent = samosaEmojis[Math.floor(Math.random()*samosaEmojis.length)]; s.style.left = (5 + Math.random()*90) + '%'; s.style.top = '-50px'; samosaArea.appendChild(s);
+            // animate falling (faster)
+            const duration = 1800 + Math.random()*1200; s.style.transition = `transform ${duration}ms linear, top ${duration}ms linear`; requestAnimationFrame(()=>{ s.style.transform = `translateY(${samosaArea.clientHeight + 80}px)`; });
+            // remove if not caught
+            const removeTimeout = setTimeout(()=>{ s.remove(); }, duration+80);
+            // click/tap to catch
+            s.addEventListener('click', function(ev){ ev.stopPropagation(); clearTimeout(removeTimeout); s.classList.add('catch-anim'); playSfx('pop.mp3');
+                // increment caught counter
+                caught += 1;
+                if (samosaScoreEl) samosaScoreEl.textContent = caught;
+                // update meter
+                if (meterFillEl) {
+                    const pct = Math.min(100, Math.round(caught / TARGET * 100));
+                    meterFillEl.style.width = pct + '%';
+                    meterFillEl.setAttribute('aria-valuenow', pct);
+                }
+                setTimeout(()=> s.remove(), 260);
+                if (caught >= TARGET){ // when target reached -> celebration
+                    try{ clearInterval(samosaTimer); }catch(e){}
+                    // remove remaining samosas
+                    try{ Array.from(samosaArea.querySelectorAll('.day3-samosa')).forEach(el=>el.remove()); }catch(e){}
+                    // trigger one-time celebration
+                    triggerBirthdayCelebration();
+                }
+            });
+        }
+
+        /* ---------- LEVEL 2: Bunk Detector ---------- */
+        const excuses = [
+            'My alarm was kidnapped by a cat',
+            'I was practicing social distancing from responsibility',
+            'The Wi-Fi owed me a favour',
+            'I mistook Monday for Friday (again)'
+        ];
+        function startLevel2(){ setProgress(2); if (!bunkList) return; bunkList.innerHTML = ''; excuses.forEach((txt, idx)=>{ const b = document.createElement('div'); b.className = 'day3-excuse'; b.tabIndex = 0; b.setAttribute('role','button'); b.setAttribute('aria-label', 'Excuse '+(idx+1)); b.textContent = txt; b.addEventListener('click', ()=> openExcuseDialog(txt)); b.addEventListener('keydown', (e)=>{ if (e.key==='Enter' || e.key===' ') { e.preventDefault(); openExcuseDialog(txt); } }); bunkList.appendChild(b); }); }
+        function openExcuseDialog(text){ // small playful dialog
+            const dlg = document.createElement('div'); dlg.className = 'day3-reveal-card'; dlg.innerHTML = `<button class="day3-close" aria-label="Close">✖</button><h2>Excuse Review</h2><p style="margin:8px 0">"${text}"</p><p style="font-size:0.95rem; color:#00796b;">HR reaction: LOL — acceptable for today.</p>`; document.body.appendChild(dlg); dlg.querySelector('.day3-close').addEventListener('click', ()=> dlg.remove()); // auto close
+            setTimeout(()=>{ try{ dlg.remove(); }catch(e){} }, 2200);
+            // after a couple dialogs, proceed
+            const opened = document.querySelectorAll('.day3-reveal-card').length; if (opened >= 2){ setTimeout(()=>{ showLevel(3); startLevel3(); }, 900); }
+        }
+
+        /* ---------- LEVEL 3: Assignment Escape Mission ---------- */
+        function startLevel3(){ setProgress(3); if (!foldersWrap) return; foldersWrap.innerHTML = ''; const total = 6; const surpriseIndex = Math.floor(Math.random()*total);
+            for (let i=0;i<total;i++){ const f = document.createElement('div'); f.className = 'day3-folder'; f.tabIndex = 0; f.setAttribute('role','button'); f.textContent = 'Folder ' + (i+1); (function(ii, el){ el.addEventListener('click', ()=> openFolder(ii, el)); el.addEventListener('keydown', (e)=>{ if (e.key==='Enter' || e.key===' ') { e.preventDefault(); openFolder(ii, el); } }); })(i,f); foldersWrap.appendChild(f); }
+            function openFolder(i, el){ // one surprise reveals final
+                el.style.transform = 'scale(0.98)'; setTimeout(()=> el.style.transform = '', 160);
+                if (i === surpriseIndex){ // success
+                    playSfx('confetti.mp3'); spawnConfetti(100); spawnBalloons(8); if (bg && (day3Playing || (musicBtn && musicBtn.classList.contains('playing')))){ safePlayAudio(bg); }
+                    revealFinal();
+                } else {
+                    // show mild disappointment
+                    const note = document.createElement('div'); note.className = 'day3-reveal-card'; note.innerHTML = `<button class="day3-close" aria-label="Close">✖</button><h2>Nope!</h2><p>Just an assignment reminder. Keep looking!</p>`; document.body.appendChild(note); note.querySelector('.day3-close').addEventListener('click', ()=> note.remove()); setTimeout(()=> note.remove(), 1400);
+                }
+            }
+        }
+
+        /* ---------- Final Reveal ---------- */
+        function revealFinal(){
+            // Avoid double-run
+            if (window.birthdayShown) return; window.birthdayShown = true;
+            // hide game container
+            const gameEl = document.getElementById('day3Game'); if (gameEl) gameEl.style.display = 'none';
+
+            // overlay with canvas and text
+            const overlay = document.createElement('div');
+            overlay.id = 'birthdayOverlay';
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0'; overlay.style.left = '0'; overlay.style.width = '100vw'; overlay.style.height = '100vh';
+            overlay.style.background = 'rgba(0,0,0,0.45)'; overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+            overlay.style.flexDirection = 'column'; overlay.style.zIndex = '99999';
+
+            overlay.innerHTML = `
+                <div id="wishText" style="z-index:100002;color:#fff;font-size:48px;font-weight:900;text-align:center;text-shadow:0 6px 30px rgba(0,0,0,0.6)">Happy Birthday Sejal Jii 🎉</div>
+                <canvas id="fireCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
+            `;
+            document.body.appendChild(overlay);
+
+            // run fireworks on the canvas
+            startFireworks();
+
+            // also spawn crackers/confetti/balloons for layered effect
+            playSfx('crackers.mp3');
+            spawnCrackers(40); spawnConfetti(120); spawnBalloons(12);
+
+            // small reveal card with close
+            finalRegion.innerHTML = '';
+            finalRegion.style.display = 'block';
+            const card = document.createElement('div'); card.className = 'day3-reveal-card'; card.setAttribute('role','dialog');
+            card.setAttribute('aria-modal','true'); card.innerHTML = `<button class="day3-close" aria-label="Close reveal">✖</button><h2 style="color:#ff1493">🎉 Surprise! 🎉</h2><p style="margin-top:10px;font-weight:700;">Happy Birthday, Sejal Jii</p>`;
+            finalRegion.appendChild(card); document.body.appendChild(finalRegion);
+
+            function cleanup(){ try{ const o = document.getElementById('birthdayOverlay'); if (o) o.remove(); finalRegion.innerHTML=''; finalRegion.style.display='none'; window.birthdayShown = false; if (window._fireworkRAF) cancelAnimationFrame(window._fireworkRAF); }catch(e){} }
+
+            card.querySelector('.day3-close').addEventListener('click', function(){ cleanup(); });
+
+            if (replayBtn){ replayBtn.style.display = 'inline-block'; replayBtn.onclick = ()=>{ cleanup(); resetDay3(); startLevel1(); replayBtn.style.display='none'; }; }
+        }
+        function closeFinal(){ try{ finalRegion.innerHTML=''; finalRegion.style.display='none'; }catch(e){} }
+
+        /* ---------- Visuals & SFX ---------- */
+        function spawnConfetti(n){ for (let i=0;i<n;i++){ const c = document.createElement('div'); c.className = 'day3-confetti-piece'; c.style.left = (Math.random()*100)+'%'; c.style.top = (Math.random()*20)+'%'; c.style.background = `hsl(${Math.random()*360},80%,60%)`; c.style.animationDuration = (2+Math.random()*3)+'s'; document.body.appendChild(c); setTimeout(()=> c.remove(), 4500); } }
+        function spawnFireworks(n){ for (let i=0;i<n;i++){ const f = document.createElement('div'); f.className = 'day3-firework'; f.style.left = (20+Math.random()*60)+'%'; f.style.top = (20+Math.random()*50)+'%'; f.style.background = `radial-gradient(circle,#fff, hsl(${Math.random()*360},90%,60%))`; document.body.appendChild(f); setTimeout(()=> f.remove(), 900); } }
+
+        function spawnCrackers(n){ for (let i=0;i<n;i++){ const c = document.createElement('div'); c.className = 'day3-cracker'; const angle = Math.random()*Math.PI*2; const dist = 120 + Math.random()*260; const dx = Math.round(Math.cos(angle)*dist); const dy = Math.round(Math.sin(angle)*dist); c.style.background = `hsl(${Math.random()*360},90%,60%)`; document.body.appendChild(c); // animate outwards slightly after insert
+                setTimeout(()=>{ c.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1)`; c.style.opacity = '0'; }, 30);
+                setTimeout(()=> c.remove(), 1200);
+            } }
+
+        // Fireworks canvas engine
+        function startFireworks(){
+            const canvas = document.getElementById('fireCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            resize(); window.addEventListener('resize', resize);
+            const particles = [];
+            function createFirework(){
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height * 0.5;
+                const hue = Math.random()*360;
+                for (let i = 0; i < 40; i++){
+                    particles.push({ x, y, speed: Math.random()*3 + 2, angle: Math.random()*Math.PI*2, alpha: 1, hue });
+                }
+            }
+            function animate(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                for (let i = particles.length-1; i >= 0; i--){ const p = particles[i]; p.x += Math.cos(p.angle)*p.speed; p.y += Math.sin(p.angle)*p.speed; p.alpha -= 0.02; if (p.alpha <= 0){ particles.splice(i,1); continue; } ctx.fillStyle = `hsla(${p.hue},90%,60%,${p.alpha})`; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); }
+                if (Math.random() < 0.06) createFirework();
+                window._fireworkRAF = requestAnimationFrame(animate);
+            }
+            animate();
+        }
+        function spawnBalloons(n){ for (let i=0;i<n;i++){ const b = document.createElement('div'); b.className = 'day3-balloon'; b.textContent = ['🎈','🎉','🎊','🎁'][Math.floor(Math.random()*4)]; b.style.left = (10+Math.random()*80)+'%'; b.style.bottom = '-40px'; b.style.animationDelay = (i*0.18)+'s'; document.body.appendChild(b); setTimeout(()=> b.remove(), 7000); } }
+
+        function playSfx(src){ try{ const s = new Audio(src); s.play().catch(()=>{}); }catch(e){} }
+
+        // One-time celebration trigger (stops spawn, shows overlay/banner, runs fireworks/crackers/confetti)
+        function triggerBirthdayCelebration(){
+            if (window.birthdayShown) return; window.birthdayShown = true;
+            try{ clearInterval(samosaTimer); }catch(e){}
+            // hide game area
+            const game = document.getElementById('day3Game'); if (game) game.style.display = 'none';
+
+            // overlay + banner
+            const overlay = document.createElement('div'); overlay.id = 'birthdayOverlay'; overlay.style.position='fixed'; overlay.style.top='0'; overlay.style.left='0'; overlay.style.width='100vw'; overlay.style.height='100vh'; overlay.style.zIndex='99999'; overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)';
+            // canvas for fireworks behind banner
+            const canvas = document.createElement('canvas'); canvas.id = 'fireCanvas'; canvas.style.position='absolute'; canvas.style.top='0'; canvas.style.left='0'; canvas.style.width='100%'; canvas.style.height='100%';
+            const banner = document.createElement('div'); banner.className = 'day3-banner'; banner.innerText = '🎉 Happy Birthday Sejal Ji 🎉';
+            overlay.appendChild(canvas); overlay.appendChild(banner); document.body.appendChild(overlay);
+            // slight delay then show banner with animation
+            setTimeout(()=> banner.classList.add('show'), 40);
+
+            // Create the required `birthdayBanner` per spec (append to document.body)
+            if (!document.getElementById('birthdayBanner')){
+                const birthdayBanner = document.createElement('div');
+                birthdayBanner.id = 'birthdayBanner';
+                birthdayBanner.innerHTML = '🎉 Happy Birthday Sejal Ji 🎉';
+                birthdayBanner.style.position = 'fixed';
+                birthdayBanner.style.top = '50%';
+                birthdayBanner.style.left = '50%';
+                birthdayBanner.style.transform = 'translate(-50%, -50%)';
+                birthdayBanner.style.fontSize = '48px';
+                birthdayBanner.style.fontWeight = '700';
+                birthdayBanner.style.color = '#ff2e88';
+                birthdayBanner.style.background = 'rgba(255,255,255,0.4)';
+                birthdayBanner.style.padding = '20px 40px';
+                birthdayBanner.style.borderRadius = '20px';
+                birthdayBanner.style.textAlign = 'center';
+                birthdayBanner.style.zIndex = '999999';
+                birthdayBanner.style.opacity = '0';
+                document.body.appendChild(birthdayBanner);
+                // trigger animation class immediately
+                // force reflow then add class
+                void birthdayBanner.offsetWidth;
+                birthdayBanner.classList.add('fadeInBanner');
+            }
+
+            // layered effects
+            try{ playSfx('crackers.mp3'); }catch(e){}
+            spawnCrackers(40); spawnConfetti(160); spawnBalloons(14);
+            startFireworks();
+
+            // ensure overlay cleared on click (do NOT remove the persistent banner)
+            overlay.addEventListener('click', function(){ try{ overlay.remove(); if (window._fireworkRAF) cancelAnimationFrame(window._fireworkRAF); }catch(e){} });
+        }
+
+        /* ---------- Reset & Init ---------- */
+        function resetDay3(){ // reset UI & timers
+            clearInterval(samosaTimer);
+            if (samosaArea) samosaArea.innerHTML = '';
+            if (bunkList) bunkList.innerHTML = '';
+            if (foldersWrap) foldersWrap.innerHTML = '';
+            if (finalRegion) finalRegion.innerHTML = ''; if (replayBtn) replayBtn.style.display='none'; setProgress(1);
+            // remove overlay/fireworks and allow celebration again
+            try{ const ov = document.getElementById('birthdayOverlay'); if (ov) ov.remove(); }catch(e){}
+            // remove persistent birthday banner so celebration can run again on reload
+            try{ const bb = document.getElementById('birthdayBanner'); if (bb) bb.remove(); }catch(e){}
+            try{ if (window._fireworkRAF) cancelAnimationFrame(window._fireworkRAF); }catch(e){}
+            window.birthdayShown = false;
+        }
+
+        // Tab handler: initialize Day3 when clicked (capture to avoid changing Day1/2 logic)
+        const day3Tab = document.querySelector('.tab-btn[data-day="3"]');
+        if (day3Tab){ document.addEventListener('click', function(ev){ const t = ev.target; if (t === day3Tab || (t.closest && t.closest('.tab-btn') === day3Tab)){ ev.stopImmediatePropagation(); ev.preventDefault(); // mimic existing behavior
+                // Unified tab switch: hide all tab-content then show Day 3
+                stopAllMusic(); showToast(); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); day3Tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => { tc.classList.remove('active'); tc.style.display='none'; });
+                if (day3Container){ day3Container.classList.add('active'); day3Container.style.display='block'; window.scrollTo({ top:0, behavior:'smooth' }); }
+                currentDay = 3; // init game
+                resetDay3(); startLevel1(); } }, true); }
+
+        // Expose init for consistency
+        window.initDay3 = function(){ resetDay3(); startLevel1(); };
+    })();
 
 </script>
