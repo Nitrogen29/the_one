@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Countdown - Day 1 & Day 2</title>
+    <title>Birthday Countdown</title>
     <style>
         /* Puzzle Blocks */
         .puzzle-block {
@@ -45,6 +45,59 @@
             50% { transform: rotate3d(1,1,0,360deg) scale(1.5); opacity: 0.7; }
             100% { transform: translateY(-50px) scale(0); opacity: 0; }
         }
+        /* Celebration Overlay */
+        .puzzle-celebration-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(6px);
+            z-index: 99999;
+            pointer-events: auto;
+        }
+        .puzzle-celebration-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            padding: 28px 36px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            transform: translateY(-10px) scale(0.95);
+            animation: celebrateIn 480ms cubic-bezier(.2,.9,.2,1) forwards;
+            text-align: center;
+            color: white;
+            min-width: 320px;
+        }
+        .puzzle-celebration-card img {
+            max-width: 200px;
+            width: 40%;
+            border-radius: 12px;
+            filter: drop-shadow(0 8px 30px rgba(255,255,255,0.08));
+        }
+        .puzzle-celebration-text {
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1.05;
+            background: linear-gradient(90deg,#ffd1dc 0%, #ffd89b 40%, #a8e6cf 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 6px 30px rgba(0,0,0,0.45);
+        }
+        .celebration-particles { position: absolute; inset: 0; pointer-events: none; }
+        .celebration-particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            opacity: 0.95;
+            animation: particleFall linear forwards;
+        }
+        @keyframes particleFall { to { transform: translateY(380px) rotate(720deg) scale(0.6); opacity: 0; } }
+        @keyframes celebrateIn { to { transform: translateY(0) scale(1); } }
         * {
             margin: 0;
             padding: 0;
@@ -65,51 +118,45 @@
             top: 0;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            padding: 15px 20px;
-            text-align: center;
+            padding: 8px 12px;
+            text-align: left;
             z-index: 2000;
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
-            border-bottom: 3px solid #ff6b9d;
+            border-bottom: 2px solid #ff6b9d;
         }
 
         .tabs-container {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
         }
 
         .tab-btn {
-            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
-            color: #666;
-            border: 2px solid transparent;
-            padding: 12px 35px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
+            background: transparent;
+            color: #444;
+            border: 0;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.18s ease;
+            box-shadow: none;
+            white-space: nowrap;
         }
 
-        .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
+        .tab-btn:hover { transform: translateY(-2px); }
 
-        .tab-btn.active {
-            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-            color: white;
-            border-color: #ff6b9d;
-            box-shadow: 0 6px 25px rgba(255, 117, 140, 0.4);
-        }
+        .tab-btn.active { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); color: white; box-shadow: 0 6px 20px rgba(255,117,140,0.18); }
 
-        .tab-separator {
-            font-size: 24px;
-            color: #ff6b9d;
-            font-weight: bold;
-        }
+        .tab-separator { display:none }
+
+        /* hide native scrollbar but allow scrolling */
+        .tabs-container::-webkit-scrollbar { height:6px; }
+        .tabs-container::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 6px; }
 
         /* Toast Notification */
         .toast-notification {
@@ -934,6 +981,33 @@
         @media (max-width: 768px){ .day3-samosa { width:42px; height:42px; font-size:26px } .day3-folder{ width:90px; height:74px } }
         @media (max-width:480px){ .day3-game{padding:14px} .day3-progress-text{display:none} }
 
+        /* Day4 shake */
+        @keyframes day4Shake { 0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)} }
+        .day4-shake { animation: day4Shake 500ms linear; }
+
+        /* Day4 road and character styles */
+        .day4-road { position: relative; height: 260px; background: linear-gradient(#dfefff, #cfe8ff); border-radius:12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
+        .day4-road::before { content:''; position:absolute; left:50%; top:0; width:6px; height:100%; background: linear-gradient(#fff,#fff); transform:translateX(-50%); opacity:0.9 }
+        .day4-perspective { position:absolute; inset:0; pointer-events:none; background-image: repeating-linear-gradient(180deg, rgba(0,0,0,0.02) 0 2px, transparent 2px 28px); transform: perspective(400px) translateZ(0) skewX(-6deg); opacity:0.25 }
+        .day4-track { position:absolute; left:50%; bottom:0; width:60%; height:100%; transform:translateX(-50%); background: linear-gradient(180deg,#7f7f7f,#4b4b4b); border-radius:8px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); opacity:0.95 }
+
+        .day4-character { position: absolute; left:50%; bottom:22px; transform: translateX(-50%); width:120px; height:140px; display:flex; align-items:center; justify-content:center; font-size:48px; border-radius:12px; background: linear-gradient(180deg,#ffdede,#fff0f6); }
+        .day4-character.slim { background: linear-gradient(180deg,#e0fff7,#e6fff2); }
+        .day4-frame { display:none }
+        .day4-frame.visible { display:block }
+        .day4-running .day4-frame { display:none }
+        .day4-running .frame-a { display:block }
+        .day4-running .frame-b { display:block; animation: frameSwap 300ms steps(1) infinite }
+        @keyframes frameSwap { 0%{opacity:1}50%{opacity:0.2}100%{opacity:1} }
+
+        /* Confetti particles (CSS-driven) */
+        .day4-confetti { position:absolute; width:10px; height:14px; border-radius:3px; pointer-events:none; z-index:100004; animation: day4Confetti 1200ms ease-out forwards }
+        @keyframes day4Confetti { 0%{transform:translate(0,0) scale(1); opacity:1} 100%{transform:translate(var(--tx,0px), var(--ty,200px)) rotate(360deg) scale(0.8); opacity:0 } }
+
+        /* Banner */
+        .day4-banner { position:fixed; left:50%; top:35%; transform:translate(-50%,-50%) scale(0.9); z-index:100006; font-size:44px; font-weight:800; color:#fff; background:linear-gradient(90deg,#ff6b9d,#ff1493); padding:18px 28px; border-radius:14px; text-align:center; opacity:0; transition: opacity 1s ease, transform 400ms ease; box-shadow:0 30px 80px rgba(255,20,147,0.14) }
+        .day4-banner.show { opacity:1; transform:translate(-50%,-50%) scale(1.06) }
+
     </style>
     <style>
         /* Day3 crackers + celebration */
@@ -957,11 +1031,10 @@
     <!-- Tab Navigation -->
     <div class="tab-navigation">
         <div class="tabs-container">
-            <button class="tab-btn active" data-day="1">🎈 Day 1</button>
-            <span class="tab-separator">|</span>
-            <button class="tab-btn" data-day="2">🎉 Day 2</button>
-            <span class="tab-separator">|</span>
-            <button class="tab-btn" data-day="3">🎭 Day 3</button>
+            <button class="tab-btn active" data-day="1">Day 1</button>
+            <button class="tab-btn" data-day="2">Day 2</button>
+            <button class="tab-btn" data-day="3">Day 3</button>
+            <button class="tab-btn" data-day="4">Day 4</button>
         </div>
     </div>
         <!-- (puzzle removed from global scope - placed inside Day 2 container) -->
@@ -1145,6 +1218,91 @@
 
     </div>
 
+<!-- Day 4 Container -->
+<div class="day-container tab-content" id="day4" aria-hidden="true">
+    <style>
+        /* Day 4 scoped styles */
+        #day4 .day4-card{max-width:980px;margin:18px auto;padding:18px;border-radius:16px;background:linear-gradient(135deg,#fff,#f7fffb);box-shadow:0 6px 20px rgba(0,0,0,0.04);}
+        #day4 .day4-road{position:relative;height:140px;margin-top:12px;background:linear-gradient(#e6f7f0,#f0fffb);overflow:hidden;border-radius:12px;display:flex;align-items:flex-end;justify-content:center}
+        #day4 .perspective{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:100%;height:100%;pointer-events:none}
+        #day4 .lane{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:20%;height:100%;background:linear-gradient(180deg,#bfeadf,#9ee0c9);border-radius:10px;filter:blur(.2px);}
+        #day4 .runner-wrap{position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;margin-right:18px}
+        #day4 #runner{width:120px;height:120px;border-radius:14px;background:linear-gradient(180deg,#fff7f2,#fff);display:flex;align-items:center;justify-content:center;font-size:54px;transition:transform 260ms ease}
+        #day4 #runner.running{transform:translateY(-6px) scale(1.02)}
+        #day4 #runner.slim{font-size:62px}
+        #day4 .day4-progress{height:14px;background:#e6f7f0;border-radius:999px;overflow:hidden;margin-top:8px}
+        #day4 .day4-progress .fill{height:100%;width:0%;background:linear-gradient(90deg,#ffd27a,#ff9a76);transition:width 200ms linear}
+        #day4 .day4-banner{position:fixed;left:50%;top:30%;transform:translate(-50%,-20%) scale(.8);background:linear-gradient(90deg,#fff7f7,#fff);padding:18px 28px;border-radius:14px;font-size:32px;font-weight:800;color:#ff2e88;box-shadow:0 10px 30px rgba(0,0,0,0.15);opacity:0;pointer-events:none;z-index:999999;transition:all 520ms cubic-bezier(.2,.9,.2,1)}
+        #day4 .day4-banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+        .day4-confetti{position:fixed;width:10px;height:14px;border-radius:2px;z-index:99999;animation:day4Confetti 1200ms linear forwards}
+        @keyframes day4Confetti{to{transform:translate(var(--tx,0),var(--ty,200px)) rotate(360deg);opacity:0}}
+        #day4 .replay-btn{margin-top:12px}
+        /* sparkles and blast */
+        #day4 .day4-sparkle{pointer-events:none;font-size:14px;opacity:0;position:absolute;transform:translateY(6px) scale(.85);transition:all 540ms cubic-bezier(.2,.9,.2,1)}
+        .day4-blast{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.8);background:linear-gradient(90deg,#fff,#fff7f7);padding:12px 18px;border-radius:12px;font-weight:800;color:#ff2e88;box-shadow:0 12px 30px rgba(0,0,0,0.12);opacity:0;z-index:100000;transition:all 520ms cubic-bezier(.2,.9,.2,1)}
+        .day4-blast.show{opacity:1;transform:translate(-50%,-58%) scale(1.06)}
+    </style>
+
+    <div class="day3-music-container">
+        <div class="day3-music-text">🎵 Day 4 — Transformation Run</div>
+        <div class="day3-music-subtext">(optional background: birthday4.mp3)</div>
+        <div class="music-btn-wrapper">
+            <button class="music-btn" id="day4MusicBtn">Play Day 4 Music</button>
+            <button class="music-btn" id="day4StopMusicBtn">Stop Music</button>
+            <p id="day4MusicStatus" style="display:none">Music Playing…</p>
+        </div>
+    </div>
+
+    <div class="section day3-welcome visible">
+        <h1 class="day2-title">🏃 Day 4 — Celebrating the amazing leader ahead</h1>
+        <p class="day2-subtitle">25 days to go to transform your number!</p>
+    </div>
+
+    <div class="section day3-game" id="day4Game" aria-label="Day 4 Transformation Run">
+        <div class="day4-card" id="day4Card">
+            <div id="day4-game" style="position:relative;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:220px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div style="font-weight:800;color:#00796b">Progress</div>
+                            <div style="font-weight:700;color:#00695c"><span id="day4Meters">0m</span> / 20m</div>
+                        </div>
+                        <div class="day4-progress" role="progressbar" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0">
+                            <div class="fill" id="day4ProgressFill"></div>
+                        </div>
+                        <div style="margin-top:8px;color:#666;font-size:13px">Tap anywhere inside this card to run. Each tap = 1m.</div>
+                    </div>
+                    <div style="flex:0 0 140px;text-align:center;">
+                        <div style="font-size:13px;color:#666;margin-bottom:6px">Distance</div>
+                        <div style="font-weight:800;color:#00695c;font-size:16px"><span id="day4MetersTop">0m</span> / 20m</div>
+                    </div>
+                </div>
+
+                <!-- Road viewport: stack assets/4.png then assets/5.png vertically and translateY to simulate movement -->
+                <div id="roadViewport" style="overflow:hidden;border-radius:12px;margin-top:12px;">
+                    <div id="roadStack" style="will-change:transform;transition:transform 360ms cubic-bezier(.2,.9,.2,1);">
+                       <!--  <img src="assets/4.png" alt="road start" style="display:block;width:100%;height:auto;max-height:360px;object-fit:cover;"> -->
+                        <img src="assets/5.png" alt="road extend" style="display:block;width:100%;height:auto;max-height:360px;object-fit:cover;">
+                    </div>
+                    <!-- runner sits on top of road, centered -->
+                    <div id="runnerLayer" style="position:absolute;left:50%;transform:translateX(-50%);bottom:18px;pointer-events:none;width:140px;height:140px;display:flex;align-items:center;justify-content:center;">
+                        <img id="runnerFat" src="assets/11.png" alt="runner fat" style="width:120px;height:auto;display:block;transition:opacity 520ms ease,transform 360ms ease;opacity:1;">
+                        <img id="runnerSlim" src="assets/22.png" alt="runner slim" style="width:120px;height:auto;display:block;position:absolute;left:0;top:0;opacity:0;transition:opacity 520ms ease,transform 360ms ease;">
+                        <img id="runnerCheer" src="assets/33.png" alt="runner cheer" style="width:140px;height:auto;display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);opacity:0;transition:opacity 520ms ease,transform 520ms ease;">
+                        <div id="sparkles" style="position:absolute;left:50%;top:10%;transform:translateX(-50%);pointer-events:none;">
+                            <!-- sparkles injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="day4Controls" style="text-align:center;margin-top:12px;"></div>
+            </div>
+        </div>
+
+        <div style="max-width:800px;margin:18px auto;padding:18px;border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,0.6),rgba(240,255,250,0.6));min-height:60px;"> </div>
+    </div>
+</div>
+
 <audio id="bgMusic" loop>
     <source src="birthday.mp3" type="audio/mpeg">
 </audio>
@@ -1155,6 +1313,13 @@
 
 <audio id="day3BgMusic" loop>
     <source src="birthday3.mp3" type="audio/mpeg">
+</audio>
+<audio id="day4BgMusic" loop>
+    <source src="birthday4.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="day4Celebrate" preload="auto">
+    <source src="birthday4.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -1219,23 +1384,70 @@
             }
         }
         function triggerCelebration() {
-            setTimeout(() => {
-                puzzleContainer.innerHTML = `<h2 style="font-size:2rem; color:#ff1493; text-align:center; margin-top:20px;">${finalMessage}</h2>`;
-                launchConfetti();
-            }, 800);
-        }
-        function launchConfetti() {
-            for(let i=0; i<100; i++){
-                let c = document.createElement('div');
-                c.classList.add('day2-confetti', 'circle');
-                c.style.backgroundColor = `hsl(${Math.random()*360}, 80%, 60%)`;
-                c.style.left = Math.random()*100 + '%';
-                c.style.top = '-20px';
-                c.style.width = c.style.height = (Math.random()*10+5) + 'px';
-                c.style.animationDuration = (Math.random()*2+2) + 's';
-                confettiContainer.appendChild(c);
-                c.addEventListener('animationend', ()=> c.remove());
+            // Create a full-screen overlay that focuses user attention
+            const overlay = document.createElement('div');
+            overlay.className = 'puzzle-celebration-overlay';
+
+            const card = document.createElement('div');
+            card.className = 'puzzle-celebration-card';
+
+            // Cheer image (replace day2/cheer.png with your actual image). if it fails, it will hide.
+            const img = document.createElement('img');
+            img.src = 'day2/cheer.png';
+            img.alt = 'cheer';
+            img.onerror = function(){ this.style.display = 'none'; };
+
+            const text = document.createElement('div');
+            text.className = 'puzzle-celebration-text';
+            text.textContent = '🎉 Happy Birthday Sejal Jii 🎉';
+
+            card.appendChild(img);
+            card.appendChild(text);
+
+            const particlesWrap = document.createElement('div');
+            particlesWrap.className = 'celebration-particles';
+
+            overlay.appendChild(particlesWrap);
+            overlay.appendChild(card);
+            document.body.appendChild(overlay);
+
+            // lock background scroll
+            const prevOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+
+            // launch confetti + sparkle particles within overlay for main focus
+            for (let i = 0; i < 80; i++) {
+                const p = document.createElement('div');
+                p.className = 'celebration-particle';
+                p.style.background = `hsl(${Math.random()*360},80%,60%)`;
+                p.style.left = (50 + (Math.random()-0.5)*80) + '%';
+                p.style.top = (20 + Math.random()*10) + '%';
+                p.style.width = p.style.height = (6 + Math.random()*16) + 'px';
+                p.style.animationDuration = (1.2 + Math.random()*1.6) + 's';
+                p.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+                particlesWrap.appendChild(p);
+                p.addEventListener('animationend', () => p.remove());
             }
+
+            // secondary confetti that drifts from top
+            for (let i = 0; i < 40; i++) {
+                const c = document.createElement('div');
+                c.className = 'day2-confetti circle';
+                c.style.background = `hsl(${Math.random()*360}, 80%, 60%)`;
+                c.style.left = (10 + Math.random()*80) + '%';
+                c.style.top = '-10%';
+                c.style.width = c.style.height = (6 + Math.random()*16) + 'px';
+                c.style.animationDuration = (2.5 + Math.random()*3) + 's';
+                overlay.appendChild(c);
+                c.addEventListener('animationend', () => c.remove());
+            }
+
+            // keep overlay for a while, then remove and restore
+            setTimeout(() => {
+                overlay.classList.add('closing');
+                document.body.style.overflow = prevOverflow;
+                setTimeout(() => overlay.remove(), 900);
+            }, 5200);
         }
     }
 
@@ -1301,6 +1513,13 @@
                 if (targetDay === 2) {
                     setTimeout(() => initDay2Animations(), 120);
                 }
+                if (targetDay === 3) {
+                    // initialize Day 3 game if available
+                    try{ if (typeof window.initDay3 === 'function') window.initDay3(); }catch(e){}
+                }
+                if (targetDay === 4) {
+                    try{ if (typeof window.initDay4 === 'function') window.initDay4(); }catch(e){}
+                }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 currentDay = targetDay;
@@ -1354,6 +1573,11 @@
         } catch (err) {
             // swallow any errors if Day 3 audio isn't present
         }
+        try {
+            if (typeof day4BgMusic !== 'undefined' && day4BgMusic && !day4BgMusic.paused) {
+                day4BgMusic.pause(); day4BgMusic.currentTime = 0; if (typeof day4MusicBtn !== 'undefined' && day4MusicBtn) { day4MusicBtn.textContent = 'Play Day 4 Music'; day4MusicBtn.classList.remove('playing'); } if (typeof day4MusicStatus !== 'undefined' && day4MusicStatus) day4MusicStatus.style.display = 'none';
+            }
+        } catch (err) {}
     }
 
     // Day 1 Music Control
@@ -1425,6 +1649,36 @@
             }
             if (day2MusicStatus) day2MusicStatus.style.display = 'none';
             isDay2Playing = false;
+        }, true);
+    }
+
+    // Day 4 Music Control
+    const day4MusicBtn = document.getElementById('day4MusicBtn');
+    const day4StopMusicBtn = document.getElementById('day4StopMusicBtn');
+    const day4BgMusic = document.getElementById('day4BgMusic');
+    const day4MusicStatus = document.getElementById('day4MusicStatus');
+    let isDay4Playing = false;
+
+    if (day4MusicBtn && day4BgMusic) {
+        day4MusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            day4BgMusic.src = 'birthday4.mp3';
+            day4BgMusic.loop = true;
+            day4BgMusic.play().catch(() => {});
+            day4MusicBtn.textContent = 'Music On ✔';
+            day4MusicBtn.classList.add('playing');
+            if (day4MusicStatus) day4MusicStatus.style.display = 'inline';
+            isDay4Playing = true;
+        }, true);
+    }
+
+    if (day4StopMusicBtn && day4BgMusic) {
+        day4StopMusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            try { day4BgMusic.pause(); day4BgMusic.currentTime = 0; } catch (err) {}
+            if (day4MusicBtn) { day4MusicBtn.textContent = 'Play Day 4 Music'; day4MusicBtn.classList.remove('playing'); }
+            if (day4MusicStatus) day4MusicStatus.style.display = 'none';
+            isDay4Playing = false;
         }, true);
     }
 
@@ -1653,6 +1907,254 @@
 
     /* DAY 3 — Campus Chaos Challenge (isolated) */
     (function(){
+        // Day 4 scoped logic — use assets images and implement tap-to-run, transform, celebration
+        (function(){
+            const day4Container = document.getElementById('day4');
+            const day4Card = document.getElementById('day4Card');
+            const game = document.getElementById('day4-game');
+            const roadViewport = document.getElementById('roadViewport');
+            const roadStack = document.getElementById('roadStack');
+            const progressFill = document.getElementById('day4ProgressFill');
+            const meters = document.getElementById('day4Meters');
+            const metersTop = document.getElementById('day4MetersTop');
+            const runnerFat = document.getElementById('runnerFat');
+            const runnerSlim = document.getElementById('runnerSlim');
+            const runnerCheer = document.getElementById('runnerCheer');
+            const sparkles = document.getElementById('sparkles');
+            const controls = document.getElementById('day4Controls');
+            const bgAudio = document.getElementById('day4BgMusic');
+            const celebrateAudio = document.getElementById('day4Celebrate');
+
+            let taps = 0; const TARGET = 20; let transformed = false;
+            let maxScroll = 0; let stepPx = 0;
+            let idleTimer = null;
+
+            function recalc() {
+                if (!roadViewport || !roadStack) return;
+                // compute how much we can scroll: stack height - viewport height
+                const stackH = roadStack.scrollHeight;
+                const viewH = roadViewport.clientHeight || (roadViewport.getBoundingClientRect && roadViewport.getBoundingClientRect().height) || 360;
+                maxScroll = Math.max(0, stackH - viewH);
+                stepPx = maxScroll / TARGET;
+            }
+
+            function updateProgressUI(){
+                const pct = Math.min(1, taps / TARGET);
+                if (progressFill) progressFill.style.width = (pct * 100) + '%';
+                if (meters) meters.textContent = Math.round(pct * TARGET) + 'm';
+                if (metersTop) metersTop.textContent = Math.round(pct * TARGET) + 'm';
+                if (progressFill) progressFill.parentElement.setAttribute('aria-valuenow', Math.round(pct * TARGET));
+            }
+
+            function moveRoad(){
+                if (!roadStack) return;
+                const y = Math.min(maxScroll, Math.round(taps * stepPx));
+                roadStack.style.transform = `translateY(-${y}px)`;
+            }
+
+            function bounceRunner(){
+                if (!runnerFat && !runnerSlim) return;
+                const el = transformed ? runnerSlim : runnerFat;
+                if (!el) return;
+                el.style.transform = 'translateY(-10px) scale(1.02)';
+                el.style.transition = 'transform 180ms ease';
+                setTimeout(()=>{ try{ el.style.transform = ''; }catch(e){} }, 180);
+            }
+
+            function emitSparkles(count){
+                if (!sparkles) return;
+                for (let i=0;i<count;i++){
+                    const s = document.createElement('div');
+                    s.className = 'day4-sparkle';
+                    s.style.position = 'absolute';
+                    s.style.left = (40 + Math.random()*20) + '%';
+                    s.style.top = (Math.random()*40) + '%';
+                    s.style.fontSize = (12 + Math.random()*10) + 'px';
+                    s.style.opacity = '0';
+                    s.style.transform = 'translateY(8px) scale(0.8)';
+                    s.style.transition = 'all 700ms cubic-bezier(.2,.9,.2,1)';
+                    s.textContent = '✨';
+                    sparkles.appendChild(s);
+                    // animate in
+                    requestAnimationFrame(()=>{ s.style.opacity = '1'; s.style.transform = 'translateY(-10px) scale(1)'; });
+                    setTimeout(()=>{ try{ s.style.opacity='0'; s.style.transform='translateY(-30px) scale(.6)'; }catch(e){} }, 900 + Math.random()*300);
+                    setTimeout(()=>{ try{ s.remove(); }catch(e){} }, 1500 + Math.random()*400);
+                }
+            }
+
+            function scheduleIdle(){
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(()=>{ // revert to fat if user pauses
+                    if (transformed) return;
+                    if (runnerFat) runnerFat.style.opacity = '1';
+                    if (runnerSlim) runnerSlim.style.opacity = '0';
+                }, 900);
+            }
+
+            function setToSlimImmediate(){
+                if (runnerFat) runnerFat.style.opacity = '0';
+                if (runnerSlim) runnerSlim.style.opacity = '1';
+                scheduleIdle();
+            }
+
+            function doTransform(){
+                if (transformed) return; transformed = true;
+                // smooth camera pause: slow road transition and lock final position
+                if (roadStack) {
+                    roadStack.style.transition = 'transform 900ms cubic-bezier(.2,.9,.2,1)';
+                    moveRoad();
+                }
+                // fade out both running images and show cheering character slightly higher
+                if (runnerFat) runnerFat.style.opacity = '0';
+                if (runnerSlim) runnerSlim.style.opacity = '0';
+                if (runnerCheer) {
+                    runnerCheer.style.top = '22%';
+                    runnerCheer.style.opacity = '1';
+                    runnerCheer.style.transform = 'translate(-50%,-50%) scale(1.06)';
+                }
+                // sparkles around runner
+                emitSparkles(18);
+                // play celebration audio
+                try{ if (bgAudio && !bgAudio.paused){ bgAudio.pause(); bgAudio.currentTime = 0; } }catch(e){}
+                try{ if (celebrateAudio) celebrateAudio.play().catch(()=>{}); }catch(e){}
+                // show banner & cheering image
+                setTimeout(()=> showBannerAndCheer(), 420);
+                // also show focused full-screen celebration overlay shortly after
+                setTimeout(()=> showDay4CelebrationOverlay(), 700);
+                clearTimeout(idleTimer);
+            }
+
+            function showBannerAndCheer(){
+                if (document.getElementById('day4Banner')) return;
+                const b = document.createElement('div'); b.id = 'day4Banner'; b.className = 'day4-banner';
+                b.innerHTML = `<div style="display:flex;align-items:center;gap:14px;"><img src="assets/33.png" alt="cheer" style="height:64px;width:auto;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.12)"><div style="font-weight:900;">🎉 Happy Birthday Sejal Ji 🎉</div></div>`;
+                document.body.appendChild(b);
+                // pop animation
+                b.style.transform = 'translate(-50%,-50%) scale(.8)'; b.style.opacity='0';
+                // force reflow
+                void b.offsetWidth;
+                b.classList.add('show');
+                // floating sparkles around banner
+                createFloatingBannerSparkles(b);
+            }
+
+            // Full-screen Day4 celebration overlay (focused popup with sparkles/confetti)
+            function showDay4CelebrationOverlay(){
+                if (document.getElementById('day4Celebration')) return;
+                const overlay = document.createElement('div');
+                overlay.id = 'day4Celebration';
+                overlay.style.position = 'fixed';
+                overlay.style.inset = '0';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.background = 'rgba(0,0,0,0.5)';
+                overlay.style.zIndex = '100010';
+
+                const card = document.createElement('div');
+                card.style.padding = '28px 36px';
+                card.style.borderRadius = '16px';
+                card.style.textAlign = 'center';
+                card.style.color = '#fff';
+                card.style.minWidth = '360px';
+                card.style.backdropFilter = 'blur(6px)';
+                card.style.boxShadow = '0 30px 90px rgba(0,0,0,0.6)';
+                card.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))';
+
+                const img = document.createElement('img');
+                img.src = 'assets/33.png';
+                img.alt = 'cheer';
+                img.style.maxWidth = '220px';
+                img.style.width = '40%';
+                img.style.borderRadius = '12px';
+                img.style.marginBottom = '12px';
+                img.onerror = function(){ this.style.display = 'none'; };
+
+                const title = document.createElement('div');
+                title.textContent = '🎉 Happy Birthday Sejal Jii!!! 🎉';
+                title.style.fontSize = '1.8rem';
+                title.style.fontWeight = '900';
+                title.style.background = 'linear-gradient(90deg,#ffd1dc 0%, #ffd89b 40%, #a8e6cf 100%)';
+                title.style.webkitBackgroundClip = 'text';
+                title.style.webkitTextFillColor = 'transparent';
+                title.style.marginBottom = '6px';
+
+                card.appendChild(img);
+                card.appendChild(title);
+
+                overlay.appendChild(card);
+                document.body.appendChild(overlay);
+                const prevOverflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+
+                // particles inside overlay
+                for (let i=0;i<60;i++){
+                    const p = document.createElement('div');
+                    p.className = 'celebration-particle';
+                    p.style.left = (30 + Math.random()*40) + '%';
+                    p.style.top = (10 + Math.random()*30) + '%';
+                    p.style.background = `hsl(${Math.random()*360},80%,60%)`;
+                    p.style.width = p.style.height = (6 + Math.random()*14) + 'px';
+                    p.style.position = 'absolute';
+                    p.style.borderRadius = '50%';
+                    p.style.animation = `particleFall ${1.2 + Math.random()*1.8}s linear forwards`;
+                    overlay.appendChild(p);
+                    p.addEventListener('animationend', ()=> p.remove());
+                }
+
+                setTimeout(()=>{ document.body.style.overflow = prevOverflow; overlay.remove(); }, 5200);
+            }
+
+            function createFloatingBannerSparkles(bannerEl){
+                for (let i=0;i<8;i++){
+                    const s = document.createElement('div'); s.className='day4-sparkle-f';
+                    s.style.position='absolute'; s.style.left = (40 + Math.random()*20) + '%'; s.style.top = (30 + Math.random()*20) + '%'; s.style.fontSize = (14 + Math.random()*16) + 'px'; s.style.opacity='0'; s.textContent='✨';
+                    bannerEl.appendChild(s);
+                    (function(ss){ setTimeout(()=>{ ss.style.opacity='1'; ss.style.transform='translateY(-8px)'; }, 60 + i*80); setTimeout(()=>{ try{ ss.remove(); }catch(e){} }, 2200 + i*200); })(s);
+                }
+            }
+
+            function handleTap(e){
+                if (!day4Container || !day4Container.classList.contains('active')) return;
+                if (transformed) return;
+                taps = Math.min(TARGET, taps + 1);
+                // on tap, immediately switch to slim runner and schedule idle revert
+                setToSlimImmediate();
+                updateProgressUI();
+                // move road and runner bounce
+                moveRoad(); bounceRunner(); emitSparkles(2);
+                if (taps >= TARGET) {
+                    // small delay so final tap feels good
+                    setTimeout(()=> doTransform(), 300);
+                }
+            }
+
+            function resetDay4(){
+                taps = 0; transformed = false; updateProgressUI();
+                if (roadStack) { roadStack.style.transition = 'transform 360ms cubic-bezier(.2,.9,.2,1)'; roadStack.style.transform = 'translateY(0)'; }
+                if (runnerFat) { runnerFat.style.opacity = '1'; runnerFat.style.transform=''; }
+                if (runnerSlim) { runnerSlim.style.opacity = '0'; runnerSlim.style.transform=''; }
+                if (runnerCheer) { runnerCheer.style.opacity = '0'; runnerCheer.style.transform='translate(-50%,-50%) scale(.98)'; runnerCheer.style.top='50%'; }
+                try{ const b = document.getElementById('day4Banner'); if (b) b.remove(); }catch(e){}
+                try{ document.querySelectorAll('.day4-confetti, .day4-sparkle, .day4-sparkle-f').forEach(n=>n.remove()); }catch(e){}
+                try{ const r = document.getElementById('day4ReplayBtn'); if (r) r.remove(); }catch(e){}
+                try{ if (celebrateAudio && !celebrateAudio.paused){ celebrateAudio.pause(); celebrateAudio.currentTime = 0; } }catch(e){}
+                clearTimeout(idleTimer);
+            }
+
+            // public initializer
+            window.initDay4 = function(){
+                if (day4Container){ day4Container.classList.add('active'); day4Container.style.display='block'; }
+                // compute sizes after images load
+                recalc();
+                // attach handler
+                if (day4Card){ day4Card.removeEventListener('click', handleTap); day4Card.addEventListener('click', handleTap); }
+                // listen for resize to recalc steps
+                window.addEventListener('resize', recalc);
+                resetDay4();
+            };
+            window.resetDay4 = resetDay4;
+        })();
         // Scoped selectors and state
         const day3Container = document.getElementById('day3');
         const musicBtn = document.getElementById('day3MusicBtn');
