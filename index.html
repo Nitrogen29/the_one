@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Countdown</title>
+    <title>Birthday Countdown - Day 1 & Day 2</title>
     <style>
         /* Puzzle Blocks */
         .puzzle-block {
@@ -1010,6 +1010,133 @@
 
     </style>
     <style>
+        /* ========== DAY 5 - Balloon Blast Factory ========== */
+        #day5 { display: none; }
+        .day-container#day5.active { display: block; }
+
+        #day5 .day5-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 36px 18px;
+            background: linear-gradient(180deg, #fff0ef 0%, #ffe8e0 100%);
+        }
+
+        #day5 .day5-wrapper {
+            width: 100%;
+            max-width: 820px;
+            height: calc(72vh);
+            min-height: 520px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #fff6f4, #ffeae6);
+            box-shadow: 0 20px 70px rgba(255, 150, 140, 0.12);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 18px;
+        }
+
+        /* Counter */
+        #day5 .day5-counter {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            color: #c0392b;
+            margin-bottom: 8px;
+            z-index: 40;
+        }
+
+        /* Game viewport */
+        #day5 .day5-area {
+            position: relative;
+            width: 100%;
+            flex: 1 1 auto;
+            border-radius: 14px;
+            background: linear-gradient(180deg,#fff7f6,#ffe9e0);
+            overflow: hidden;
+            display: block;
+            touch-action: manipulation;
+        }
+
+        /* Balloon base */
+        .day5-balloon {
+            position: absolute;
+            bottom: -130px;
+            width: 62px;
+            height: 82px;
+            border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            transform-origin: center bottom;
+            transition: transform 160ms ease, opacity 280ms ease;
+            z-index: 30;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .day5-balloon .shade {
+            position:absolute; inset:6px; border-radius:inherit; pointer-events:none; background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.12)); mix-blend-mode:overlay;
+        }
+
+        .day5-balloon .face {
+            position: absolute; bottom: 10px; font-size: 18px; pointer-events: none;
+        }
+
+        .day5-balloon.pop-scale { transform: scale(1.08); }
+
+        /* float animation (duration controlled inline) */
+        @keyframes day5FloatUp { to { transform: translateY(-140vh); opacity: 0; } }
+
+        /* confetti pieces when pop */
+        .day5-confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            z-index: 60;
+            pointer-events: none;
+            border-radius: 2px;
+            transform: translate3d(0,0,0);
+        }
+
+        /* Celebration overlay */
+        .day5-overlay {
+            position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; z-index:100020; pointer-events:auto;
+        }
+
+        .day5-dim { position:absolute; inset:0; background: rgba(0,0,0,0.42); backdrop-filter: blur(4px); }
+
+        .day5-banner {
+            position: relative; z-index:100021; padding: 28px 44px; border-radius: 18px; text-align:center; color:white; font-weight:900; font-size:40px;
+            background: radial-gradient(circle at 20% 20%, #ffd1dc 0%, #ff7eb3 40%, #ff1493 100%);
+            box-shadow: 0 30px 120px rgba(255,80,140,0.28); transform: scale(.9); opacity:0; transition: transform 560ms cubic-bezier(.2,.9,.2,1), opacity 520ms ease;
+        }
+
+        .day5-banner.show { transform: scale(1.03); opacity: 1; }
+
+        /* floating sparkles background */
+        .day5-sparkle { position:absolute; font-size:18px; color:rgba(255,255,255,0.9); z-index:100015; pointer-events:none; animation: float 6s ease-in-out infinite; }
+
+        @media (max-width: 600px) {
+            .day5-banner { font-size: 22px; padding: 18px 22px; }
+            .day5-balloon { width:48px; height:62px; }
+            #day5 .day5-wrapper { min-height: 460px; }
+        }
+        /* Ensure Day 5 music controls don't use the global sticky music rules */
+        #day5 .music-container { position: static !important; top: auto !important; z-index: 15; }
+        /* Ensure counter is above the music area visually */
+        #day5 .day5-counter { position: relative; z-index: 30; margin-top: 6px; }
+    </style>
+    <style>
         /* Day3 crackers + celebration */
         .day3-cracker { position: fixed; left:50%; top:50%; width:8px; height:18px; border-radius:3px; transform: translate(-50%,-50%) scale(0); opacity:1; z-index:4600; transition: transform 900ms cubic-bezier(.2,.9,.2,1), opacity 900ms ease; pointer-events:none; }
         .day3-celebrate { position:fixed; left:50%; top:45%; transform:translate(-50%,-50%) scale(0.92); z-index:4700; font-size:40px; font-weight:900; color:#ff1493; text-align:center; text-shadow:0 10px 40px rgba(255,20,147,0.16); opacity:0; transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease; }
@@ -1035,6 +1162,7 @@
             <button class="tab-btn" data-day="2">Day 2</button>
             <button class="tab-btn" data-day="3">Day 3</button>
             <button class="tab-btn" data-day="4">Day 4</button>
+            <button class="tab-btn" data-day="5">Day 5</button>
         </div>
     </div>
         <!-- (puzzle removed from global scope - placed inside Day 2 container) -->
@@ -1303,6 +1431,28 @@
     </div>
 </div>
 
+<!-- Day 5 Container: Balloon Blast Factory -->
+<div class="day-container tab-content" id="day5" aria-hidden="true">
+    <div class="day5-section visible">
+        <div class="day5-wrapper">
+            <div class="day5-music-container music-container" style="width:100%;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <span class="hand-emoji">👉</span>
+                    <button class="music-btn" id="day5MusicBtn">Play Day 5 Music</button>
+                    <button class="music-btn" id="day5StopMusicBtn">Stop Music</button>
+                    <p id="day5MusicStatus" style="display:none;margin-left:6px;color:#ff6b9d">Music Playing…</p>
+                </div>
+            </div>
+            <div class="day5-counter">Balloons Popped: <span id="day5Count">0</span> / 20</div>
+            <div class="day5-area" id="day5Area" aria-label="Balloon Blast Factory game area">
+                <!-- balloons and confetti will be injected here -->
+            </div>
+            <!-- overlay placeholder (celebration) -->
+            <div id="day5OverlayContainer" aria-hidden="true"></div>
+        </div>
+    </div>
+</div>
+
 <audio id="bgMusic" loop>
     <source src="birthday.mp3" type="audio/mpeg">
 </audio>
@@ -1316,6 +1466,10 @@
 </audio>
 <audio id="day4BgMusic" loop>
     <source src="birthday4.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="day5BgMusic" loop>
+    <source src="birthday5.mp3" type="audio/mpeg">
 </audio>
 
 <audio id="day4Celebrate" preload="auto">
@@ -1498,6 +1652,10 @@
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
+                // If we are leaving Day 5, reset it to clean up timers and DOM
+                if (currentDay === 5) {
+                    try { if (typeof resetDay5 === 'function') resetDay5(); } catch(e){}
+                }
                 // Hide all tab-content sections explicitly and remove active class
                 const contents = document.querySelectorAll('.tab-content');
                 contents.forEach(c => { c.classList.remove('active'); c.style.display = 'none'; });
@@ -1519,6 +1677,9 @@
                 }
                 if (targetDay === 4) {
                     try{ if (typeof window.initDay4 === 'function') window.initDay4(); }catch(e){}
+                }
+                if (targetDay === 5) {
+                    try{ if (typeof window.initDay5 === 'function') window.initDay5(); }catch(e){}
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1576,6 +1737,11 @@
         try {
             if (typeof day4BgMusic !== 'undefined' && day4BgMusic && !day4BgMusic.paused) {
                 day4BgMusic.pause(); day4BgMusic.currentTime = 0; if (typeof day4MusicBtn !== 'undefined' && day4MusicBtn) { day4MusicBtn.textContent = 'Play Day 4 Music'; day4MusicBtn.classList.remove('playing'); } if (typeof day4MusicStatus !== 'undefined' && day4MusicStatus) day4MusicStatus.style.display = 'none';
+            }
+        } catch (err) {}
+        try {
+            if (typeof day5BgMusic !== 'undefined' && day5BgMusic && !day5BgMusic.paused) {
+                day5BgMusic.pause(); day5BgMusic.currentTime = 0; if (typeof day5MusicBtn !== 'undefined' && day5MusicBtn) { day5MusicBtn.textContent = 'Play Day 5 Music'; day5MusicBtn.classList.remove('playing'); } if (typeof day5MusicStatus !== 'undefined' && day5MusicStatus) day5MusicStatus.style.display = 'none';
             }
         } catch (err) {}
     }
@@ -1679,6 +1845,36 @@
             if (day4MusicBtn) { day4MusicBtn.textContent = 'Play Day 4 Music'; day4MusicBtn.classList.remove('playing'); }
             if (day4MusicStatus) day4MusicStatus.style.display = 'none';
             isDay4Playing = false;
+        }, true);
+    }
+
+    // Day 5 Music Control
+    const day5MusicBtn = document.getElementById('day5MusicBtn');
+    const day5StopMusicBtn = document.getElementById('day5StopMusicBtn');
+    const day5BgMusic = document.getElementById('day5BgMusic');
+    const day5MusicStatus = document.getElementById('day5MusicStatus');
+    let isDay5Playing = false;
+
+    if (day5MusicBtn && day5BgMusic) {
+        day5MusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            day5BgMusic.src = 'birthday5.mp3';
+            day5BgMusic.loop = true;
+            day5BgMusic.play().catch(() => {});
+            day5MusicBtn.textContent = 'Music On ✔';
+            day5MusicBtn.classList.add('playing');
+            if (day5MusicStatus) day5MusicStatus.style.display = 'inline';
+            isDay5Playing = true;
+        }, true);
+    }
+
+    if (day5StopMusicBtn && day5BgMusic) {
+        day5StopMusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            try { day5BgMusic.pause(); day5BgMusic.currentTime = 0; } catch (err) {}
+            if (day5MusicBtn) { day5MusicBtn.textContent = 'Play Day 5 Music'; day5MusicBtn.classList.remove('playing'); }
+            if (day5MusicStatus) day5MusicStatus.style.display = 'none';
+            isDay5Playing = false;
         }, true);
     }
 
@@ -2415,6 +2611,208 @@
 
         // Expose init for consistency
         window.initDay3 = function(){ resetDay3(); startLevel1(); };
+    })();
+
+    /* ========== DAY 5 - Balloon Blast Factory ========== */
+    (function(){
+        const wrapper = document.getElementById('day5');
+        const area = document.getElementById('day5Area');
+        const overlayHolder = document.getElementById('day5OverlayContainer');
+        const countEl = document.getElementById('day5Count');
+
+        const state = {
+            interval: null,
+            idCounter: 0,
+            balloons: new Map(),
+            popped: 0,
+            TARGET: 20,
+            running: false
+        };
+
+        function rand(min, max){ return Math.random()*(max-min)+min; }
+
+        function spawnBalloon(){
+            if (!area || currentDay !== 5) return;
+            const id = ++state.idCounter;
+            const el = document.createElement('div');
+            el.className = 'day5-balloon';
+            el.dataset.id = id;
+            el.dataset.taps = 0;
+
+            // color
+            const hue = Math.floor(Math.random()*360);
+            el.style.background = `linear-gradient(180deg, hsl(${hue},80%,74%) 0%, hsl(${hue},80%,64%) 60%)`;
+
+            // random X position (keep inside safe margins)
+            const left = Math.floor(rand(6, 88));
+            el.style.left = left + '%';
+
+            // add shade and optional face
+            const shade = document.createElement('div'); shade.className = 'shade'; el.appendChild(shade);
+            const face = document.createElement('div'); face.className = 'face';
+
+            // special balloon with sunglasses (1/10 probability)
+            const isSpecial = Math.random() < 0.1;
+            if (isSpecial) { face.textContent = '😎'; el.dataset.special = '1'; }
+            else { face.textContent = ''; }
+            el.appendChild(face);
+
+            // float duration random slow
+            const dur = rand(9, 15); // seconds
+            el.style.animation = `day5FloatUp ${dur}s linear forwards`;
+
+            // attach click / tap handler
+            const clickHandler = function(e){
+                e.stopPropagation();
+                try{ const t = parseInt(el.dataset.taps||'0',10) + 1; el.dataset.taps = t; el.classList.add('pop-scale'); setTimeout(()=> el.classList.remove('pop-scale'), 180);
+                    if (t >= 3) popBalloon(id);
+                }catch(err){}
+            };
+            el.addEventListener('click', clickHandler);
+
+            // cleanup timer when floating finishes
+            const removeTimer = setTimeout(()=>{
+                // balloon floated off-screen: remove safely
+                removeBalloon(id);
+            }, (dur*1000) + 600);
+
+            // store state
+            state.balloons.set(id, { el, removeTimer, clickHandler });
+
+            area.appendChild(el);
+        }
+
+        function removeBalloon(id){
+            const rec = state.balloons.get(id);
+            if (!rec) return;
+            try{ clearTimeout(rec.removeTimer); }catch(e){}
+            try{ rec.el.removeEventListener('click', rec.clickHandler); }catch(e){}
+            try{ rec.el.remove(); }catch(e){}
+            state.balloons.delete(id);
+        }
+
+        function popBalloon(id){
+            const rec = state.balloons.get(id);
+            if (!rec) return;
+            const el = rec.el;
+            // prevent double-pop
+            state.balloons.delete(id);
+            try{ clearTimeout(rec.removeTimer); }catch(e){}
+            try{ el.removeEventListener('click', rec.clickHandler); }catch(e){}
+
+            // spawn confetti pieces at balloon location
+            const rect = area.getBoundingClientRect();
+            const brect = el.getBoundingClientRect();
+            const originX = brect.left - rect.left + brect.width/2;
+            const originY = brect.top - rect.top + brect.height/2;
+
+            for (let i=0;i<18;i++){
+                const c = document.createElement('div');
+                c.className = 'day5-confetti';
+                c.style.left = originX + 'px';
+                c.style.top = originY + 'px';
+                c.style.background = `hsl(${Math.random()*360},80%,60%)`;
+                area.appendChild(c);
+                // animate using transform + transition
+                const angle = rand(0, Math.PI*2);
+                const dist = rand(40, 180);
+                requestAnimationFrame(()=>{
+                    c.style.transition = `transform ${rand(600,1000)}ms ease-out, opacity ${rand(600,1000)}ms ease-out`;
+                    c.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) rotate(${rand(180,720)}deg)`;
+                    c.style.opacity = '0';
+                });
+                setTimeout(()=>{ try{ c.remove(); }catch(e){} }, 1200);
+            }
+
+            // small pop animation on balloon element
+            try{ el.style.transition = 'transform 260ms ease, opacity 260ms ease'; el.style.transform = 'scale(0.2)'; el.style.opacity = '0'; }catch(e){}
+            setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 320);
+
+            // increment counter
+            const isSpecial = el.dataset.special === '1';
+            state.popped += (isSpecial ? 2 : 1);
+            if (countEl) countEl.textContent = Math.min(state.popped, state.TARGET);
+
+            // when special popped, show a tiny sparkle
+            if (isSpecial){ spawnSmallSparkles(rect.width/2, rect.height/2, 8); }
+
+            // check for completion
+            if (state.popped >= state.TARGET){
+                finishDay5();
+            }
+        }
+
+        function spawnSmallSparkles(cx, cy, n){
+            for (let i=0;i<n;i++){
+                const s = document.createElement('div'); s.className = 'day5-sparkle'; s.style.left = (cx + rand(-120,120)) + 'px'; s.style.top = (cy + rand(-80,80)) + 'px'; s.textContent = '✨'; s.style.opacity = '0'; area.appendChild(s);
+                (function(ss){ setTimeout(()=>{ ss.style.transition = 'opacity 700ms ease, transform 700ms ease'; ss.style.opacity = '1'; ss.style.transform = 'translateY(-20px)'; }, 10); setTimeout(()=>{ try{ ss.remove(); }catch(e){} }, 2000); })(s);
+            }
+        }
+
+        function finishDay5(){
+            // stop spawning
+            if (state.interval){ clearInterval(state.interval); state.interval = null; }
+            // remove remaining balloons
+            try{ state.balloons.forEach((v,k)=>{ removeBalloon(k); }); }catch(e){}
+
+            // show celebration overlay
+            celebrateDay5();
+        }
+
+        function celebrateDay5(){
+            if (!overlayHolder) return;
+            overlayHolder.innerHTML = '';
+            const overlay = document.createElement('div'); overlay.className = 'day5-overlay'; overlay.id = 'day5Overlay';
+            const dim = document.createElement('div'); dim.className = 'day5-dim';
+            const banner = document.createElement('div'); banner.className = 'day5-banner'; banner.textContent = '🎉 Happy Birthday Sejal Ji 🎉';
+            overlay.appendChild(dim); overlay.appendChild(banner);
+            overlayHolder.appendChild(overlay);
+
+            // small delay then show banner
+            setTimeout(()=> banner.classList.add('show'), 40);
+
+            // floating sparkles in background
+            for (let i=0;i<12;i++){
+                const s = document.createElement('div'); s.className = 'day5-sparkle'; s.textContent = '✨'; s.style.left = (10 + Math.random()*80) + '%'; s.style.top = (10 + Math.random()*60) + '%'; overlayHolder.appendChild(s);
+                (function(ss, idx){ setTimeout(()=> ss.style.opacity = '1', 80 + idx*120); setTimeout(()=>{ try{ ss.remove(); }catch(e){} }, 6200 + idx*60); })(s, i);
+            }
+
+            // center fireworks/confetti
+            const areaRect = (area && area.getBoundingClientRect()) || { width: 600, height: 400 };
+            for (let i=0;i<80;i++){
+                const c = document.createElement('div'); c.className = 'day5-confetti'; c.style.left = (areaRect.width/2 + rand(-120,120)) + 'px'; c.style.top = (areaRect.height/2 + rand(-80,120)) + 'px'; c.style.background = `hsl(${Math.random()*360},80%,60%)`; overlay.appendChild(c);
+                (function(cc){ setTimeout(()=>{ cc.style.transition = `transform ${rand(1000,1600)}ms ease-out, opacity ${rand(900,1500)}ms ease-out`; cc.style.transform = `translate(${rand(-200,200)}px, ${rand(-260,80)}px) rotate(${rand(180,720)}deg)`; cc.style.opacity = '0'; }, 20); setTimeout(()=>{ try{ cc.remove(); }catch(e){} }, 1700); })(c);
+            }
+
+            // optional: allow overlay to be removed when user leaves or after delay
+            setTimeout(()=>{ try{ overlay.classList.add('done'); }catch(e){} }, 5400);
+        }
+
+        function resetDay5(){
+            // clear interval
+            if (state.interval){ clearInterval(state.interval); state.interval = null; }
+            // remove balloons and their timers
+            try{ state.balloons.forEach((v,k)=>{ try{ clearTimeout(v.removeTimer); if (v.el && v.el.removeEventListener) v.el.removeEventListener('click', v.clickHandler); }catch(e){}; try{ v.el.remove(); }catch(e){} }); }catch(e){}
+            state.balloons.clear();
+            state.popped = 0; if (countEl) countEl.textContent = '0';
+            // remove overlay
+            try{ if (overlayHolder) overlayHolder.innerHTML = ''; }catch(e){}
+            state.running = false;
+        }
+
+        function initDay5(){
+            if (!area) return;
+            resetDay5();
+            state.running = true;
+            // spawn a few immediately
+            for (let i=0;i<3;i++){ setTimeout(spawnBalloon, i*320); }
+            // spawn continuously
+            state.interval = setInterval(()=>{ spawnBalloon(); }, 900);
+        }
+
+        // expose to global
+        window.initDay5 = initDay5;
+        window.resetDay5 = resetDay5;
     })();
 
 </script>
