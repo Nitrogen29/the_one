@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Countdown - Day 1 & Day 2</title>
+    <title>Birthday Countdown</title>
     <style>
         /* Puzzle Blocks */
         .puzzle-block {
@@ -1984,12 +1984,32 @@
     }
 
     // Day 6 Music Control (toggle play/pause via round button)
-    const day6MusicBtn = document.getElementById('day6MusicBtn');
-    const day6BgMusic = document.getElementById('day6BgMusic');
-    let isDay6Playing = false;
-    if (day6MusicBtn && day6BgMusic) {
-        day6MusicBtn.addEventListener('click', function(e){
-            try{ if (day6BgMusic.paused) { day6BgMusic.src = 'birthday6.mp3'; day6BgMusic.loop = true; day6BgMusic.play().catch(()=>{}); day6MusicBtn.textContent = '🔈'; day6MusicBtn.classList.add('playing'); isDay6Playing = true; } else { day6BgMusic.pause(); day6BgMusic.currentTime = 0; day6MusicBtn.textContent = '🔊'; day6MusicBtn.classList.remove('playing'); isDay6Playing = false; } }catch(err){}
+    const day5MusicBtn = document.getElementById('day5MusicBtn');
+    const day5StopMusicBtn = document.getElementById('day5StopMusicBtn');
+    const day5BgMusic = document.getElementById('day5BgMusic');
+    const day5MusicStatus = document.getElementById('day5MusicStatus');
+    let isDay5Playing = false;
+
+    if (day5MusicBtn && day5BgMusic) {
+        day5MusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            day5BgMusic.src = 'birthday6.mp3';
+            day5BgMusic.loop = true;
+            day5BgMusic.play().catch(() => {});
+            day5MusicBtn.textContent = 'Music On ✔';
+            day5MusicBtn.classList.add('playing');
+            if (day5MusicStatus) day5MusicStatus.style.display = 'inline';
+            isDay5Playing = true;
+        }, true);
+    }
+
+    if (day5StopMusicBtn && day5BgMusic) {
+        day5StopMusicBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            try { day5BgMusic.pause(); day5BgMusic.currentTime = 0; } catch (err) {}
+            if (day5MusicBtn) { day5MusicBtn.textContent = 'Play Day 5 Music'; day5MusicBtn.classList.remove('playing'); }
+            if (day5MusicStatus) day5MusicStatus.style.display = 'none';
+            isDay5Playing = false;
         }, true);
     }
 
