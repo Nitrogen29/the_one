@@ -1137,6 +1137,82 @@
         #day5 .day5-counter { position: relative; z-index: 30; margin-top: 6px; }
     </style>
     <style>
+        /* ========== DAY 6 - Memory Lantern Lift-Up Game ========== */
+        #day6 { display: none; }
+        .day-container#day6.active { display: block; }
+
+        #day6 .day6-stage {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            background: url('assets/sky_bg.png') center/cover no-repeat;
+            transition: opacity 400ms ease-out;
+        }
+
+        #day6 .day6-wrapper {
+            width: 100%;
+            max-width: 980px;
+            height: calc(86vh);
+            min-height: 520px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* top-right round music button */
+        .day6-music-btn {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#ffd1dc,#ff7eb3);
+            display:flex;align-items:center;justify-content:center;color:white;font-weight:800;border:0;box-shadow:0 10px 30px rgba(255,80,140,0.18);z-index:60;cursor:pointer
+        }
+
+        /* lantern */
+        .day6-lantern {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            width: 120px;
+            height: auto;
+            transition: transform 360ms ease-out, opacity 360ms ease-out;
+            z-index: 40;
+            will-change: transform;
+        }
+
+        /* slow sway */
+        @keyframes lanternSway { 0%{ transform: translateX(-50%) translateY(0) rotate(-2deg) } 50%{ transform: translateX(-50%) translateY(0) rotate(2deg) } 100%{ transform: translateX(-50%) translateY(0) rotate(-2deg) } }
+        .day6-lantern.sway { animation: lanternSway 3.6s ease-in-out infinite; transform-origin: center bottom }
+
+        /* sky brighten effect */
+        .day6-sky-brighten { position:absolute; inset:0; background:rgba(255,255,255,0.0); pointer-events:none; transition: background 600ms ease-out; z-index:30 }
+        .day6-sky-brighten.on { background: rgba(255,255,255,0.14); }
+
+        /* message at top center */
+        .day6-message { position: absolute; top: 14%; left:50%; transform: translateX(-50%); color: #fff; text-align:center; font-weight:800; font-size:22px; text-shadow: 0 6px 18px rgba(0,0,0,0.5); opacity:0; transition: opacity 300ms ease, transform 300ms ease; z-index:55 }
+        .day6-message.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+
+        /* glowing final text */
+        .day6-final { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:100100; pointer-events:none; opacity:0; transition: opacity 800ms ease-in-out }
+        .day6-final.show { opacity:1 }
+        .day6-final img { width: 90%; max-width: 820px; height: auto; display:block }
+
+        /* star sparkle */
+        .day6-star { position:absolute; color:#fff; font-size:12px; opacity:0; transform: scale(0.8); animation: starPop 1600ms ease-in-out infinite; pointer-events:none }
+        @keyframes starPop { 0%{opacity:0; transform:scale(0.4)} 20%{opacity:1; transform:scale(1)} 80%{opacity:0.6; transform:scale(0.9)} 100%{opacity:0} }
+
+        @media (max-width:600px){ .day6-music-btn{ width:48px;height:48px; right:10px; top:10px } .day6-lantern{ width:92px } .day6-message{ font-size:18px } }
+    </style>
+    <style>
         /* Day3 crackers + celebration */
         .day3-cracker { position: fixed; left:50%; top:50%; width:8px; height:18px; border-radius:3px; transform: translate(-50%,-50%) scale(0); opacity:1; z-index:4600; transition: transform 900ms cubic-bezier(.2,.9,.2,1), opacity 900ms ease; pointer-events:none; }
         .day3-celebrate { position:fixed; left:50%; top:45%; transform:translate(-50%,-50%) scale(0.92); z-index:4700; font-size:40px; font-weight:900; color:#ff1493; text-align:center; text-shadow:0 10px 40px rgba(255,20,147,0.16); opacity:0; transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease; }
@@ -1163,6 +1239,7 @@
             <button class="tab-btn" data-day="3">Day 3</button>
             <button class="tab-btn" data-day="4">Day 4</button>
             <button class="tab-btn" data-day="5">Day 5</button>
+            <button class="tab-btn" data-day="6">Day 6</button>
         </div>
     </div>
         <!-- (puzzle removed from global scope - placed inside Day 2 container) -->
@@ -1453,6 +1530,19 @@
     </div>
 </div>
 
+<!-- Day 6 Container: Memory Lantern Lift-Up Game -->
+<div class="day-container tab-content" id="day6" aria-hidden="true">
+    <div class="day6-stage visible">
+        <div class="day6-wrapper">
+            <button class="day6-music-btn" id="day6MusicBtn" aria-label="Play Day 6 music">🔊</button>
+            <div class="day6-sky-brighten" id="day6Sky"></div>
+            <img src="assets/lantern.png" alt="lantern" class="day6-lantern sway" id="day6Lantern">
+            <div class="day6-message" id="day6Message" role="status" aria-live="polite"></div>
+            <div class="day6-final" id="day6Final"><img src="assets/glow_text.png" alt="Happy Birthday Sejal Ji"></div>
+        </div>
+    </div>
+</div>
+
 <audio id="bgMusic" loop>
     <source src="birthday.mp3" type="audio/mpeg">
 </audio>
@@ -1470,6 +1560,10 @@
 
 <audio id="day5BgMusic" loop>
     <source src="birthday5.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="day6BgMusic" loop>
+    <source src="birthday6.mp3" type="audio/mpeg">
 </audio>
 
 <audio id="day4Celebrate" preload="auto">
@@ -1652,9 +1746,12 @@
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                // If we are leaving Day 5, reset it to clean up timers and DOM
+                // If we are leaving Day 5 or Day 6, reset them to clean up timers and DOM
                 if (currentDay === 5) {
                     try { if (typeof resetDay5 === 'function') resetDay5(); } catch(e){}
+                }
+                if (currentDay === 6) {
+                    try { if (typeof resetDay6 === 'function') resetDay6(); } catch(e){}
                 }
                 // Hide all tab-content sections explicitly and remove active class
                 const contents = document.querySelectorAll('.tab-content');
@@ -1680,6 +1777,9 @@
                 }
                 if (targetDay === 5) {
                     try{ if (typeof window.initDay5 === 'function') window.initDay5(); }catch(e){}
+                }
+                if (targetDay === 6) {
+                    try{ if (typeof window.initDay6 === 'function') window.initDay6(); }catch(e){}
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1742,6 +1842,11 @@
         try {
             if (typeof day5BgMusic !== 'undefined' && day5BgMusic && !day5BgMusic.paused) {
                 day5BgMusic.pause(); day5BgMusic.currentTime = 0; if (typeof day5MusicBtn !== 'undefined' && day5MusicBtn) { day5MusicBtn.textContent = 'Play Day 5 Music'; day5MusicBtn.classList.remove('playing'); } if (typeof day5MusicStatus !== 'undefined' && day5MusicStatus) day5MusicStatus.style.display = 'none';
+            }
+        } catch (err) {}
+        try {
+            if (typeof day6BgMusic !== 'undefined' && day6BgMusic && !day6BgMusic.paused) {
+                day6BgMusic.pause(); day6BgMusic.currentTime = 0; if (typeof day6MusicBtn !== 'undefined' && day6MusicBtn) { day6MusicBtn.textContent = '🔊'; day6MusicBtn.classList.remove('playing'); } 
             }
         } catch (err) {}
     }
@@ -1875,6 +1980,16 @@
             if (day5MusicBtn) { day5MusicBtn.textContent = 'Play Day 5 Music'; day5MusicBtn.classList.remove('playing'); }
             if (day5MusicStatus) day5MusicStatus.style.display = 'none';
             isDay5Playing = false;
+        }, true);
+    }
+
+    // Day 6 Music Control (toggle play/pause via round button)
+    const day6MusicBtn = document.getElementById('day6MusicBtn');
+    const day6BgMusic = document.getElementById('day6BgMusic');
+    let isDay6Playing = false;
+    if (day6MusicBtn && day6BgMusic) {
+        day6MusicBtn.addEventListener('click', function(e){
+            try{ if (day6BgMusic.paused) { day6BgMusic.src = 'birthday6.mp3'; day6BgMusic.loop = true; day6BgMusic.play().catch(()=>{}); day6MusicBtn.textContent = '🔈'; day6MusicBtn.classList.add('playing'); isDay6Playing = true; } else { day6BgMusic.pause(); day6BgMusic.currentTime = 0; day6MusicBtn.textContent = '🔊'; day6MusicBtn.classList.remove('playing'); isDay6Playing = false; } }catch(err){}
         }, true);
     }
 
@@ -2814,5 +2929,90 @@
         window.initDay5 = initDay5;
         window.resetDay5 = resetDay5;
     })();
+
+        /* ========== DAY 6 - Memory Lantern Lift-Up Game ========== */
+        (function(){
+            const wrapper = document.getElementById('day6');
+            const stage = wrapper ? wrapper.querySelector('.day6-stage') : null;
+            const lantern = document.getElementById('day6Lantern');
+            const messageEl = document.getElementById('day6Message');
+            const sky = document.getElementById('day6Sky');
+            const finalWrap = document.getElementById('day6Final');
+            const musicBtn = document.getElementById('day6MusicBtn');
+            const audio = document.getElementById('day6BgMusic');
+
+            const MESSAGES = [
+                'Warm glow, warm wishes.',
+                'Sejal Ji, may your days lift higher.',
+                'Progress looks good on you.',
+                'Grace. Growth. Glow.',
+                'Light follows you, always.',
+                'Happy Birthday Sejal Ji.'
+            ];
+
+            const TOTAL_LANTERNS = 6;
+            const TAPS_TO_TOP = 15;
+            const TAP_STEP = 25; // pixels per tap (approx)
+
+            let current = 0; // lantern index
+            let taps = 0;
+            let active = false;
+            let clickHandler = null;
+            let starTimers = [];
+
+            // preload assets
+            (function preload(){ ['assets/sky_bg.png','assets/lantern.png','assets/glow_text.png'].forEach(src=>{ const i=new Image(); i.src=src; }); })();
+
+            function showMessageFor(msg){ if (!messageEl) return; messageEl.textContent = msg; messageEl.classList.add('show'); setTimeout(()=>{ try{ messageEl.classList.remove('show'); }catch(e){} }, 1500); }
+
+            function resetLanternVisual(){ if (!lantern) return; lantern.style.transition = 'transform 360ms ease-out, opacity 360ms ease-out'; lantern.style.opacity = '1'; lantern.style.transform = 'translateX(-50%) translateY(0)'; if (!lantern.classList.contains('sway')) lantern.classList.add('sway'); }
+
+            function handleTap(){ if (!active) return; taps++; const up = -Math.min(taps * TAP_STEP, TAPS_TO_TOP * TAP_STEP); if (lantern) lantern.style.transform = `translateX(-50%) translateY(${up}px)`; if (taps === 3){ showMessageFor(MESSAGES[current]); } if (taps >= TAPS_TO_TOP){ // reached top
+                    active = false;
+                    // fade out lantern
+                    if (lantern){ lantern.classList.remove('sway'); lantern.style.opacity = '0'; }
+                    // brighten sky
+                    if (sky) sky.classList.add('on');
+                    setTimeout(()=>{
+                        // prepare next lantern
+                        current++;
+                        if (current < TOTAL_LANTERNS){
+                            // reset for next
+                            taps = 0; if (sky) sky.classList.remove('on'); resetLanternVisual(); active = true;
+                        } else {
+                            // end scene
+                            showFinalGlow();
+                        }
+                    }, 700);
+            } }
+
+            function showFinalGlow(){ if (finalWrap) finalWrap.classList.add('show'); // create star sparkles
+                const wrap = wrapper || document.body; for (let i=0;i<36;i++){ const s = document.createElement('div'); s.className = 'day6-star'; s.textContent = '✨'; s.style.left = (Math.random()*90+5) + '%'; s.style.top = (Math.random()*70+10) + '%'; s.style.fontSize = (8 + Math.random()*18) + 'px'; wrap.appendChild(s); // remove later
+                    const t = setTimeout(()=>{ try{ s.remove(); }catch(e){} }, 5200 + Math.random()*1200); starTimers.push(t);
+                }
+            }
+
+            function resetDay6(){ // cleanup timers and visuals
+                active = false; taps = 0; current = 0; try{ if (audio && !audio.paused){ audio.pause(); audio.currentTime = 0; } }catch(e){}
+                if (lantern){ lantern.style.transition=''; lantern.style.transform='translateX(-50%) translateY(0)'; lantern.style.opacity='1'; if (!lantern.classList.contains('sway')) lantern.classList.add('sway'); }
+                if (sky) sky.classList.remove('on'); if (finalWrap) finalWrap.classList.remove('show'); if (messageEl) messageEl.classList.remove('show');
+                // remove stars timers
+                starTimers.forEach(t=>clearTimeout(t)); starTimers = [];
+                if (stage && clickHandler) stage.removeEventListener('click', clickHandler);
+                clickHandler = null;
+            }
+
+            function initDay6(){ if (!stage || !lantern) return; resetDay6(); active = true; taps = 0; current = 0; resetLanternVisual(); // attach handler
+                clickHandler = function(e){ e.stopPropagation(); handleTap(); };
+                stage.addEventListener('click', clickHandler);
+            }
+
+            // music button toggle (safety: also used by stopAllMusic)
+            if (musicBtn && audio){ musicBtn.addEventListener('click', function(e){ try{ if (audio.paused){ audio.src = 'birthday6.mp3'; audio.loop = true; audio.play().catch(()=>{}); musicBtn.textContent = '🔈'; musicBtn.classList.add('playing'); } else { audio.pause(); audio.currentTime = 0; musicBtn.textContent = '🔊'; musicBtn.classList.remove('playing'); } }catch(e){} }); }
+
+            // expose
+            window.initDay6 = initDay6;
+            window.resetDay6 = resetDay6;
+        })();
 
 </script>
