@@ -195,6 +195,8 @@
             animation: slideDown 0.8s ease-out;
         }
 
+        /* Day 6 music appearance override: transparent and higher */
+        #day6 .music-container { background: transparent !important; box-shadow: none !important; top: 8px !important; padding: 6px !important; }
         .music-text {
             font-size: 18px;
             color: #ff6b9d;
@@ -1211,6 +1213,9 @@
         @keyframes starPop { 0%{opacity:0; transform:scale(0.4)} 20%{opacity:1; transform:scale(1)} 80%{opacity:0.6; transform:scale(0.9)} 100%{opacity:0} }
 
         @media (max-width:600px){ .day6-music-btn{ width:48px;height:48px; right:10px; top:10px } .day6-lantern{ width:92px } .day6-message{ font-size:18px } }
+        /* Day6 music centered adjustments */
+        #day6 .day6-music-container { left: 50%; transform: translateX(-50%); right: auto; }
+        #day6 #day6MusicStatus { margin-top: 6px; }
     </style>
     <style>
         /* Day3 crackers + celebration */
@@ -1254,10 +1259,8 @@
     <div class="day-container tab-content active" id="day1">
         <!-- Music Container -->
         <div class="music-container">
-            <div class="music-text">🎵 Tap here to turn on birthday music (optional)</div>
             <div class="music-subtext">"Listen, please, to some music for you."</div>
             <div class="music-btn-wrapper">
-                <span class="hand-emoji">👉</span>
                 <button class="music-btn" id="musicBtn">Play Music</button>
                 <button class="music-btn" id="stopMusicBtn">Stop Music</button>
                 <p id="musicStatus" style="display:none">Music Playing…</p>
@@ -1534,12 +1537,13 @@
 <div class="day-container tab-content" id="day6" aria-hidden="true">
     <div class="day6-stage visible">
         <div class="day6-wrapper">
-            <div class="day6-music-container music-container" style="position:absolute;right:12px;top:12px;z-index:70;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="hand-emoji">👉</span>
-                    <button class="music-btn" id="day6PlayBtn">Play Day 6 Music</button>
-                    <button class="music-btn" id="day6StopBtn">Stop Music</button>
-                    <p id="day6MusicStatus" style="display:none;margin:0 6px;color:#ff6b9d;font-weight:700">Music Playing…</p>
+            <div class="day6-music-container music-container" style="position:absolute;left:50%;top:6px;transform:translateX(-50%);z-index:70;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:transparent;padding:4px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <button class="music-btn" id="day6PlayBtn">Play Day 6 Music</button>
+                        <button class="music-btn" id="day6StopBtn">Stop Music</button>
+                    </div>
+                    <p id="day6MusicStatus" style="display:none;margin:6px 6px 0 6px;color:#ff6b9d;font-weight:700">Music Playing…</p>
                 </div>
             </div>
             <div class="day6-sky-brighten" id="day6Sky"></div>
@@ -2006,6 +2010,7 @@
             day6PlayBtn.textContent = 'Music On ✔';
             day6PlayBtn.classList.add('playing');
             if (day6MusicStatus) day6MusicStatus.style.display = 'inline';
+            // reflect status visually
             isDay6Playing = true;
         }, true);
     }
@@ -2016,6 +2021,7 @@
             try { day6BgMusic.pause(); day6BgMusic.currentTime = 0; } catch (err) {}
             if (day6PlayBtn) { day6PlayBtn.textContent = 'Play Day 6 Music'; day6PlayBtn.classList.remove('playing'); }
             if (day6MusicStatus) day6MusicStatus.style.display = 'none';
+            // reflect stopped status visually
             isDay6Playing = false;
         }, true);
     }
@@ -2990,7 +2996,25 @@
             // preload assets
             (function preload(){ ['assets/sky_bg.png','assets/lantern.png','assets/glow_text.png'].forEach(src=>{ const i=new Image(); i.src=src; }); })();
 
-            function showMessageFor(msg){ if (!messageEl) return; messageEl.textContent = msg; messageEl.classList.add('show'); setTimeout(()=>{ try{ messageEl.classList.remove('show'); }catch(e){} }, 1500); }
+            function showMessageFor(msg){
+                if (!messageEl) return;
+                messageEl.textContent = msg;
+                // Attempt to position the message centered just above the lantern image
+                try{
+                    const wrapper = document.getElementById('day6');
+                    if (wrapper && lantern){
+                        const wRect = wrapper.getBoundingClientRect();
+                        const lRect = lantern.getBoundingClientRect();
+                        const left = (lRect.left + (lRect.width/2)) - wRect.left;
+                        const top = (lRect.top - wRect.top) - 18; // place ~18px above lantern top
+                        messageEl.style.left = left + 'px';
+                        messageEl.style.top = top + 'px';
+                        messageEl.style.transform = 'translateX(-50%)';
+                    }
+                }catch(e){}
+                messageEl.classList.add('show');
+                setTimeout(()=>{ try{ messageEl.classList.remove('show'); }catch(e){} }, 1500);
+            }
 
             function resetLanternVisual(){ if (!lantern) return; lantern.style.transition = 'transform 360ms ease-out, opacity 360ms ease-out'; lantern.style.opacity = '1'; lantern.style.transform = 'translateX(-50%) translateY(0)'; if (!lantern.classList.contains('sway')) lantern.classList.add('sway'); }
 
