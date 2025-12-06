@@ -1245,6 +1245,7 @@
             <button class="tab-btn" data-day="4">Day 4</button>
             <button class="tab-btn" data-day="5">Day 5</button>
             <button class="tab-btn" data-day="6">Day 6</button>
+            <button class="tab-btn" data-day="7">Day 7</button>
         </div>
     </div>
         <!-- (puzzle removed from global scope - placed inside Day 2 container) -->
@@ -1540,7 +1541,7 @@
             <div class="day6-music-container music-container" style="position:absolute;left:50%;top:6px;transform:translateX(-50%);z-index:70;">
                 <div style="display:flex;flex-direction:column;align-items:center;gap:6px;background:transparent;padding:4px;">
                     <div style="display:flex;align-items:center;gap:8px;">
-                        <button class="music-btn" id="day6PlayBtn">Play Day 6 Music</button>
+                        <button class="music-btn" id="day6PlayBtn">Play Music</button>
                         <button class="music-btn" id="day6StopBtn">Stop Music</button>
                     </div>
                     <p id="day6MusicStatus" style="display:none;margin:6px 6px 0 6px;color:#ff6b9d;font-weight:700">Music Playing…</p>
@@ -1858,6 +1859,12 @@
         try {
             if (typeof day6BgMusic !== 'undefined' && day6BgMusic && !day6BgMusic.paused) {
                 day6BgMusic.pause(); day6BgMusic.currentTime = 0; if (typeof day6PlayBtn !== 'undefined' && day6PlayBtn) { day6PlayBtn.textContent = 'Play Day 6 Music'; day6PlayBtn.classList.remove('playing'); } 
+            }
+        } catch (err) {}
+        try {
+            if (typeof day7BgMusic !== 'undefined' && day7BgMusic && !day7BgMusic.paused) {
+                day7BgMusic.pause(); day7BgMusic.currentTime = 0; if (typeof day7PlayBtn !== 'undefined' && day7PlayBtn) { day7PlayBtn.textContent = 'Play Day 7 Music'; day7PlayBtn.classList.remove('playing'); }
+                if (typeof day7MusicStatus !== 'undefined' && day7MusicStatus) day7MusicStatus.style.display = 'none';
             }
         } catch (err) {}
     }
@@ -3085,3 +3092,318 @@
         })();
 
 </script>
+
+
+<!-- Day 7: The Sky Path (appended at bottom) -->
+<div id="day7" style="display:none;">
+    <h2>⭐ Day 7 — The skyful day The hertful wishes ⭐</h2>
+
+    <!-- Music section (above game) - same structure as Day 1 -->
+    <div id="day7-music-section">
+        <div class="music-container">
+            <div class="music-subtext">"Optional music for Day 7"</div>
+            <div class="music-btn-wrapper">
+                <button class="music-btn" id="day7PlayBtn">Play Day 7 Music</button>
+                <button class="music-btn" id="day7StopBtn">Stop Day 7 Music</button>
+                <p id="day7MusicStatus" style="display:none">Music Playing…</p>
+            </div>
+            <audio id="day7BgMusic" src="birthday7.mp3"></audio>
+        </div>
+    </div>
+
+    <!-- Game section below music -->
+    <div id="day7-game-section" style="margin-top:18px;">
+        <div id="day7-container">
+            <img id="sky-backg" src="assets/sky_backg.png" alt="Sky Background">
+            <div id="player-circle" aria-hidden="true"></div>
+            <div id="orbs"></div>
+            <div id="day7-message" role="status" aria-live="polite"></div>
+            <!-- double-reveal images -->
+            <img id="finalImage" src="assets/final_text.png" alt="Final Reveal" style="opacity:0; transition:opacity 800ms ease; width:80%; max-width:880px; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:300; pointer-events:none;" />
+            <img id="glowImage" src="assets/glow_text.png" alt="Glow Reveal" style="opacity:0; transition:opacity 900ms ease; width:78%; max-width:820px; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.98); z-index:320; pointer-events:none;" />
+        </div>
+    </div>
+
+</div>
+
+<style>
+    /* Day 7 — Scoped styles */
+    #day7 { padding: 14px; }
+    #day7-container { position: relative; width: 100%; height: 70vh; min-height: 420px; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg,#f9f7ff,#f1f8ff); }
+
+    /* Fullscreen fixed background feel inside container */
+    #sky-backg { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 120%; height: 140%; object-fit: cover; z-index: 1; animation: skyScroll 36s linear infinite; filter: saturate(1.05) contrast(1.02); }
+
+    @keyframes skyScroll { 0% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-6%); } 100% { transform: translateX(-50%) translateY(0); } }
+
+    /* Z-index layering: background < orbs < player < messages < final text */
+    #orbs { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+
+    /* Orbs are image elements placed absolutely; do NOT replace with plain circles */
+    .day7-orb-img { position: absolute; width: 56px; height: 56px; z-index: 32; pointer-events: auto; transform-origin: center center; transition: transform 420ms ease-out, opacity 420ms ease-out; }
+
+    @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-14px); } 100% { transform: translateY(0); } }
+    .day7-orb-float { animation: float 4s ease-in-out infinite; }
+
+    /* Player circle follows pointer */
+    #player-circle { position: absolute; width: 72px; height: 72px; left: 50%; top: 50%; transform: translate(-50%,-50%); border-radius: 50%; z-index: 60; background: radial-gradient(circle at 30% 30%, rgba(255,250,230,0.98), rgba(255,220,140,0.92)); box-shadow: 0 10px 40px rgba(255,220,140,0.18), 0 0 28px rgba(255,235,190,0.22); pointer-events: none; transition: box-shadow 260ms ease, transform 220ms ease; }
+    #player-circle.glow { box-shadow: 0 20px 80px rgba(255,230,170,0.36), 0 0 56px rgba(255,240,200,0.28); transform: translate(-50%,-50%) scale(1.03); }
+
+    /* Dust explosion uses image and fades quickly */
+    .day7-dust { position: absolute; width: 64px; height: 64px; background-image: url('assets/dust.png'); background-size: contain; background-repeat: no-repeat; opacity: 0; transform: scale(0.9); z-index: 55; pointer-events: none; animation: dustFade 600ms forwards; }
+    @keyframes dustFade { 0% { opacity: 0; transform: scale(0.7); } 30% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(1.3); } }
+
+    /* Message area */
+    #day7-message { position: absolute; top: 8%; left: 50%; transform: translateX(-50%); z-index: 90; color: #ffffff; font-weight: 800; font-size: 20px; text-shadow: 0 8px 22px rgba(0,0,0,0.56); opacity: 0; transition: opacity 260ms ease, transform 260ms ease; pointer-events: none; }
+    #day7-message.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+
+    /* Final reveal images - full width responsive */
+    #finalImage { max-width: 92%; height: auto; display:block; margin:0 auto; }
+    #finalImage.show { opacity: 1; }
+    #glowImage { max-width: 92%; height: auto; display:block; margin:0 auto; filter: drop-shadow(0 30px 80px rgba(255,200,240,0.18)); }
+    #glowImage.show { opacity: 1; transform: translate(-50%,-50%) scale(1); animation: glowPulse 2000ms ease-in-out infinite; }
+    @keyframes glowPulse { 0% { transform: translate(-50%,-50%) scale(0.99); filter: drop-shadow(0 30px 80px rgba(255,200,240,0.18)); } 50% { transform: translate(-50%,-50%) scale(1.02); filter: drop-shadow(0 40px 110px rgba(255,220,255,0.22)); } 100% { transform: translate(-50%,-50%) scale(0.99); } }
+
+    /* Sky bright overlay that'll appear at final reveal */
+    .day7-bright-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0); z-index: 120; pointer-events: none; transition: background 720ms ease; }
+    .day7-bright-overlay.on { background: rgba(255,255,255,0.12); }
+
+    /* Sparkle particles */
+    .day7-spark { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff, #ffd89b); z-index: 160; opacity: 0; transform: scale(0.3); animation: sparkPop 1400ms ease-in-out forwards; }
+    @keyframes sparkPop { 0% { opacity: 0; transform: scale(0.3); } 30% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(0.5); } }
+
+    /* Music controls top area (Day1-6 style) */
+    #day7-music-section { display:flex; justify-content:center; gap:8px; align-items:center; }
+    #day7MusicBtn { appearance:none; border:0; background: linear-gradient(135deg,#ffd1dc,#ff7eb3); color:#fff; font-weight:800; padding:10px 12px; border-radius:999px; cursor:pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+
+    @media (max-width:600px) {
+        #player-circle { width: 56px; height: 56px; }
+        .day7-orb-img { width: 44px; height: 44px; }
+        #day7-message { font-size: 16px; }
+        #final-text { width: 92%; }
+    }
+
+</style>
+
+<script>
+/* Day 7 — The Sky Path (exact spec) */
+(function(){
+    const MESSAGES = [
+        "Sukoon aapke saath chale.",
+        "Har raah asaan ho.",
+        "Muskaan hamesha saath rahe.",
+        "Aaj ka din halka aur khubsurat ho.",
+        "Har sapna apni jagah paaye.",
+        "Dil mein roshni bani rahe.",
+        "Sejal Ji, aapka saal khoobsurat ho."
+    ];
+
+    const ORB_COUNT = 7;
+    const root = document.getElementById('day7');
+    const stage = document.getElementById('day7-container');
+    const bg = document.getElementById('sky-backg');
+    const player = document.getElementById('player-circle');
+    const orbsEl = document.getElementById('orbs');
+    const messageEl = document.getElementById('day7-message');
+    const finalImg = document.getElementById('finalImage');
+    const glowImg = document.getElementById('glowImage');
+    // Day1-6 style music elements for Day 7
+    const day7PlayBtn = document.getElementById('day7PlayBtn');
+    const day7StopBtn = document.getElementById('day7StopBtn');
+    const day7BgMusic = document.getElementById('day7BgMusic');
+    const day7MusicStatus = document.getElementById('day7MusicStatus');
+
+    let orbs = [];
+    let collected = 0;
+    let raf = null;
+    let pos = { x: 0, y: 0 };
+    let target = { x: 0, y: 0 };
+    let running = false;
+
+    // Preload images/audio
+    (function preload(){ ['assets/sky_backg.png','assets/orb.png','assets/dust.png','assets/glow_text.png','assets/birthday7.mp3'].forEach(s=>{ const img=new Image(); img.src=s; }); })();
+
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    function createOrbElement(x,y){
+        const img = document.createElement('img');
+        img.className = 'day7-orb-img day7-orb-float';
+        img.src = 'assets/orb.png';
+        img.style.left = x + 'px';
+        img.style.top = y + 'px';
+        img.setAttribute('draggable','false');
+        return img;
+    }
+
+    function spawnOrbs(){
+        orbsEl.innerHTML = '';
+        orbs = [];
+        const rect = stage.getBoundingClientRect();
+        const margin = 64;
+        for(let i=0;i<ORB_COUNT;i++){
+            const x = rand(margin, Math.max(rect.width - margin, margin));
+            const y = rand(margin, Math.max(rect.height - margin, margin));
+            const orb = createOrbElement(x,y);
+            orb.dataset.index = i;
+            orbsEl.appendChild(orb);
+            orbs.push(orb);
+        }
+    }
+
+    // Show sequential message
+    function showMessage(text){
+        messageEl.textContent = text;
+        messageEl.classList.add('show');
+        // increased display time so messages remain visible longer (4s)
+        setTimeout(()=>{ try{ messageEl.classList.remove('show'); }catch(e){} }, 4000);
+    }
+
+    // Dust explosion at x,y relative to stage
+    function spawnDust(x,y){
+        const d = document.createElement('div'); d.className = 'day7-dust'; d.style.left = (x - 32) + 'px'; d.style.top = (y - 32) + 'px'; stage.appendChild(d);
+        setTimeout(()=>{ try{ d.remove(); }catch(e){} }, 620);
+    }
+
+    function collectOrb(orb){
+        if(!orb) return;
+        const oRect = orb.getBoundingClientRect();
+        const sRect = stage.getBoundingClientRect();
+        const cx = oRect.left + oRect.width/2 - sRect.left;
+        const cy = oRect.top + oRect.height/2 - sRect.top;
+        orb.style.transition = 'transform 520ms ease-out, opacity 520ms ease-out';
+        orb.style.transform = 'scale(1.4)';
+        orb.style.opacity = '0';
+        setTimeout(()=>{ try{ orb.remove(); }catch(e){} }, 520);
+        spawnDust(cx,cy);
+        showMessage(MESSAGES[collected] || '');
+        collected++;
+        if (collected >= ORB_COUNT) {
+            // Immediately trigger final reveal after the last orb collection
+            try{ doubleRevealSequence(); }catch(e){}
+        }
+    }
+
+    function checkCollisions(){
+        if(!player) return;
+        const pRect = player.getBoundingClientRect();
+        const pCx = pRect.left + pRect.width/2;
+        const pCy = pRect.top + pRect.height/2;
+        for(let i=0;i<orbs.length;i++){
+            const o = orbs[i];
+            if(!o) continue;
+            const oRect = o.getBoundingClientRect();
+            const oCx = oRect.left + oRect.width/2;
+            const oCy = oRect.top + oRect.height/2;
+            const dx = pCx - oCx, dy = pCy - oCy;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const thresh = (pRect.width/2) + (oRect.width/2) - 6;
+            if(dist < thresh){
+                orbs[i] = null;
+                collectOrb(o);
+            }
+        }
+    }
+
+    function animate(){
+        const sRect = stage.getBoundingClientRect();
+        const tX = Math.max(8, Math.min(target.x - sRect.left, sRect.width - 8));
+        const tY = Math.max(8, Math.min(target.y - sRect.top, sRect.height - 8));
+        pos.x += (tX - pos.x) * 0.14;
+        pos.y += (tY - pos.y) * 0.14;
+        player.style.left = (pos.x - (player.offsetWidth/2)) + 'px';
+        player.style.top = (pos.y - (player.offsetHeight/2)) + 'px';
+        checkCollisions();
+        raf = requestAnimationFrame(animate);
+    }
+
+    function attachPointer(){
+        function onMove(e){ const ev = e.touches ? e.touches[0] : e; target.x = ev.clientX; target.y = ev.clientY; }
+        stage.addEventListener('mousemove', onMove, { passive:true });
+        stage.addEventListener('touchmove', onMove, { passive:true });
+        const r = stage.getBoundingClientRect(); pos.x = r.left + r.width/2; pos.y = r.top + r.height/2; player.style.left = (pos.x - (player.offsetWidth/2)) + 'px'; player.style.top = (pos.y - (player.offsetHeight/2)) + 'px';
+    }
+
+    // Double reveal sequence required by spec
+    function doubleRevealSequence(){
+        // stop movement and stop orb animations
+        if(raf) cancelAnimationFrame(raf);
+        running = false;
+        orbs.forEach(o=>{ try{ if(o) o.classList.remove('day7-orb-float'); }catch(e){} });
+        try{ orbsEl.style.transition = 'opacity 520ms ease'; orbsEl.style.opacity = '0'; }catch(e){}
+
+        // Ensure glow image is hidden & finalImage shown immediately
+        try{ if(glowImg){ glowImg.classList.remove('show'); glowImg.style.opacity = '0'; } }catch(e){}
+        if(finalImg){ finalImg.style.transition = 'opacity 800ms ease'; finalImg.style.display = 'block'; finalImg.classList.add('show'); finalImg.style.opacity = '1'; }
+
+        // Keep visible for 7 seconds, then immediately switch to glow image
+        setTimeout(()=>{
+            try{
+                // hide final quickly and show glow immediately
+                if(finalImg){ finalImg.classList.remove('show'); finalImg.style.transition = 'opacity 160ms ease'; finalImg.style.opacity = '0'; }
+                if(glowImg){ glowImg.classList.add('show'); glowImg.style.opacity = '1'; }
+
+                // bright overlay + sparkles
+                let ov = stage.querySelector('.day7-bright-overlay');
+                if(!ov){ ov = document.createElement('div'); ov.className = 'day7-bright-overlay'; stage.appendChild(ov); }
+                ov.classList.add('on');
+                for(let i=0;i<30;i++){
+                    const s = document.createElement('div'); s.className = 'day7-spark'; s.style.left = (Math.random()*82+8) + '%'; s.style.top = (Math.random()*70+12) + '%'; s.style.animationDelay = (Math.random()*800) + 'ms'; stage.appendChild(s);
+                    setTimeout(()=>{ try{ s.remove(); }catch(e){} }, 3200 + Math.random()*1200);
+                }
+
+                // small completion cue (optional)
+                try{ const cue = new Audio('assets/completion.mp3'); cue.play().catch(()=>{}); }catch(e){}
+
+                // Pause day7 music if playing
+                try{ if(window.day7BgMusic && !window.day7BgMusic.paused){ window.day7BgMusic.pause(); window.day7BgMusic.currentTime = 0; if(window.day7PlayBtn) window.day7PlayBtn.textContent = 'Play Day 7 Music'; if(window.day7MusicStatus) window.day7MusicStatus.style.display = 'none'; } }catch(e){}
+            }catch(e){}
+        }, 7000);
+    }
+
+    function reset(){
+        collected = 0; if(raf) cancelAnimationFrame(raf); running = false; orbs = []; orbsEl.innerHTML = ''; try{ finalImg.classList.remove('show'); }catch(e){}
+        const ov = stage.querySelector('.day7-bright-overlay'); if(ov) ov.classList.remove('on'); try{ orbsEl.style.opacity = '1'; }catch(e){}
+        // ensure day7 music stopped when reset
+        try{ if(window.day7BgMusic && !window.day7BgMusic.paused){ window.day7BgMusic.pause(); window.day7BgMusic.currentTime = 0; if(window.day7PlayBtn) window.day7PlayBtn.textContent = 'Play Day 7 Music'; if(window.day7MusicStatus) window.day7MusicStatus.style.display = 'none'; } }catch(e){}
+    }
+
+    function init(){
+        reset();
+        spawnOrbs();
+        attachPointer();
+        running = true; raf = requestAnimationFrame(animate);
+    }
+
+    // Day 7 music controls (match Day 1 behavior)
+    if (day7PlayBtn && day7BgMusic) {
+        day7PlayBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            day7BgMusic.src = 'birthday7.mp3';
+            day7BgMusic.loop = true;
+            day7BgMusic.play().catch(() => {});
+            day7PlayBtn.textContent = 'Music On ✔';
+            day7PlayBtn.classList.add('playing');
+            if (day7MusicStatus) day7MusicStatus.style.display = 'inline';
+        }, true);
+    }
+    if (day7StopBtn && day7BgMusic) {
+        day7StopBtn.addEventListener('click', function(e) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            try { day7BgMusic.pause(); day7BgMusic.currentTime = 0; } catch (err) {}
+            if (day7PlayBtn) { day7PlayBtn.textContent = 'Play Day 7 Music'; day7PlayBtn.classList.remove('playing'); }
+            if (day7MusicStatus) day7MusicStatus.style.display = 'none';
+        }, true);
+    }
+
+    // expose variables so global stopAllMusic() can find them (keeps compatibility)
+    try{ window.day7BgMusic = day7BgMusic; window.day7PlayBtn = day7PlayBtn; window.day7MusicStatus = day7MusicStatus; }catch(e){}
+
+    document.addEventListener('click', function(e){ const t = e.target; const tab = t.closest && t.closest('.tab-btn'); if(tab){ const day = tab.getAttribute('data-day'); if(day !== '7'){ try{ if(musicEl && !musicEl.paused){ musicEl.pause(); musicEl.currentTime = 0; musicBtn.textContent = 'Play'; } }catch(e){} reset(); } else { setTimeout(()=> init(), 160); } } }, true);
+
+    window.initDay7 = init; window.resetDay7 = reset;
+
+})();
+</script>
+
+</body>
+</html>
